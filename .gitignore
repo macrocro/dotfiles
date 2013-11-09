@@ -1,0 +1,7 @@
+# all ignore
+/*
+
+# not ignore
+!/.gitignore
+!/.emacs.d
+!/.zshrc
