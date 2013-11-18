@@ -5,3 +5,6 @@
 !/.gitignore
 !/.emacs.d
 !/.zshrc
+
+.emacs.d/history
+.emacs.d/auto-save-list/*
