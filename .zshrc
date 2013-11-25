@@ -1,4 +1,5 @@
 # PATH=/usr/local/opt:$PATH
+PATH=/usr/local/bin:$PATH
 disable r
 alias r="rails"
 alias ll="ls -al"
