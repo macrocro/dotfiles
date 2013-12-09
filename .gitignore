@@ -5,6 +5,9 @@
 !/.gitignore
 !/.emacs.d
 !/.zshrc
+!/.tmux.conf
+!/.tmux-powerlinerc
+!/.tmux-powerline
 
 .emacs.d/history
 .emacs.d/auto-save-list/*
