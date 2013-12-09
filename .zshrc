@@ -2,8 +2,10 @@
 PATH=/usr/local/bin:$PATH
 disable r
 alias r="rails"
-alias ll="ls -al"
+alias ll="ls -alG"
+alias ls="ls -G"
 alias grep="grep --color=auto"
+alias e="emacsclient -t"
 
 ## 補完時に大小文字を区別しない
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
@@ -107,10 +109,6 @@ bindkey "^N" history-beginning-search-forward-end
 # ビープ音を消す
 setopt nolistbeep
 
-# alias
-
-alias ls="ls -G"
-
 zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
 
 
@@ -123,3 +121,20 @@ eval "$(rbenv init - zsh)"
 
 export PGHOST=localhost
 export PGDATA=/usr/local/var/postgres
+
+# emacs daemon
+if ps aux | grep -e "emacs --daemon$" >/dev/null 2>&1; then
+else
+    emacs --daemon
+fi
+
+# tmux auto start
+if [ -z "$TMUX" -a -z "$STY" ]; then
+    if type tmux >/dev/null 2>&1; then
+        if tmux has-session && tmux list-sessions | grep -qE '.*]'; then
+            tmux attach && echo "tmux attached session "
+        else
+            tmux new-session && echo "tmux created new session"
+        fi
+    fi
+fi
