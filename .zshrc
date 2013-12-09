@@ -6,6 +6,11 @@ alias ll="ls -alG"
 alias ls="ls -G"
 alias grep="grep --color=auto"
 alias e="emacsclient -t"
+alias git diff="git diff --color-words"
+
+# プロンプトのカラー表示を有効
+autoload -U colors
+colors
 
 ## 補完時に大小文字を区別しない
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
