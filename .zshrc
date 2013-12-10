@@ -2,7 +2,7 @@
 if [[ "${OSTYPE}" = darwin* ]] ; then
     alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs -nw"
     alias emacsclient="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
-    alias e="emacsclient -t"
+    alias e="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -t"
 else
     PATH=/usr/local/bin:$PATH
     alias e="emacsclient -t"
@@ -135,9 +135,16 @@ export PGHOST=localhost
 export PGDATA=/usr/local/var/postgres
 
 # emacs daemon
-if ps aux | grep -e "emacs --daemon$" >/dev/null 2>&1; then
+if [[ "${OSTYPE}" = darwin* ]] ; then
+    if ps aux | grep -e "/MacOS/Emacs -nw --daemon=^J3,4^J" | grep -v "grep" >/dev/null 2>&1; then
+    else
+        emacs --daemon >/dev/null 2>&1
+    fi
 else
-    emacs --daemon
+    if ps aux | grep -e "emacs --daemon$" >/dev/null 2>&1; then
+    else
+        emacs --daemon >/dev/null 2>&1
+    fi
 fi
 
 # tmux auto start
