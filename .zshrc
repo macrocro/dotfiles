@@ -1,11 +1,18 @@
 # PATH=/usr/local/opt:$PATH
-PATH=/usr/local/bin:$PATH
+if [[ "${OSTYPE}" = darwin* ]] ; then
+    alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs -nw"
+    alias emacsclient="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
+    alias e="emacsclient -t"
+else
+    PATH=/usr/local/bin:$PATH
+    alias e="emacsclient -t"
+fi
+
 disable r
 alias r="rails"
 alias ll="ls -alG"
 alias ls="ls -G"
 alias grep="grep --color=auto"
-alias e="emacsclient -t"
 alias git diff="git diff --color-words"
 
 # プロンプトのカラー表示を有効
