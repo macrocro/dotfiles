@@ -126,7 +126,13 @@ zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'c
 
 [ -f ~/.zshrc.include ] && source ~/.zshrc.include # 設定ファイルのinclude
 
-eval "$(rbenv init - zsh)"
+# rbenv
+if [[ "${OSTYPE}" = darwin* ]] ; then
+    export PATH="$HOME/.rbenv/bin:$PATH"
+    eval "$(rbenv init - zsh)"
+else
+    eval "$(rbenv init - zsh)"
+fi
 
 #octave用
 #export GNUTERM=x11
@@ -148,12 +154,15 @@ else
 fi
 
 # tmux auto start
-if [ -z "$TMUX" -a -z "$STY" ]; then
-    if type tmux >/dev/null 2>&1; then
-        if tmux has-session && tmux list-sessions | grep -qE '.*]'; then
-            tmux attach && echo "tmux attached session "
-        else
-            tmux new-session && echo "tmux created new session"
+if [[ "${OSTYPE}" = darwin* ]] ; then
+else
+    if [ -z "$TMUX" -a -z "$STY" ]; then
+        if type tmux >/dev/null 2>&1; then
+            if tmux has-session && tmux list-sessions | grep -qE '.*]'; then
+                tmux attach && echo "tmux attached session "
+            else
+                tmux new-session && echo "tmux created new session"
+            fi
         fi
     fi
 fi
