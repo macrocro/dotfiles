@@ -1,8 +1,8 @@
 # PATH=/usr/local/opt:$PATH
 if [[ "${OSTYPE}" = darwin* ]] ; then
-    alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs -nw"
-    alias emacsclient="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
-    alias e="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -t"
+    # alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs -nw"
+    # alias emacsclient="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
+    # alias e="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -t"
 else
     PATH=/usr/local/bin:$PATH
     alias e="emacsclient -t"

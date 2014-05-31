@@ -1,0 +1,36 @@
+((("html" .
+   [0 0 0 1])
+  ("span" .
+   [0 0 0 1])
+  ("php" .
+   [1 0 0])
+  ("directory" .
+   [0 0 0 0 0 0 0 0 1])
+  ("php_eol" .
+   [0 0 0 0 0 0 2])
+  ("phpinfo" .
+   [0 0 0 0 0 1 0])
+  ("str_getcsv" .
+   [0 0 0 1 0 0 0 0 0 0])
+  ("mb_strtolower" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 1])
+  ("stompframe" .
+   [0 0 0 0 0 0 0 0 0 1])
+  ("stream_socket_accept" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1])
+  ("header_remove" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 1])
+  ("regexiterator" .
+   [0 0 0 0 1 0 0 0 0 0 0 0 0])
+  ("strtr" .
+   [0 0 0 1 0])
+  ("defun-declarations-alist" .
+   [0 0 1 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0])
+  ("st" .
+   [1 0])
+  ("helm-ucs" .
+   [0 0 0 0 1 0 0 0])
+  ("helm-mini" .
+   [1 0 0 0 0 0 0 0 0])
+  ("backspace" .
+   [1 0 0 0 0 0 0 0 0])))
