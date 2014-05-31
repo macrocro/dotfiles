@@ -8,6 +8,7 @@
 !/.tmux.conf
 !/.tmux-powerlinerc
 !/.tmux-powerline
+!/.oh-my-zsh
 
 .emacs.d/history
 .emacs.d/auto-save-list/*

@@ -1,168 +1,78 @@
-# PATH=/usr/local/opt:$PATH
-if [[ "${OSTYPE}" = darwin* ]] ; then
-    # alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs -nw"
-    # alias emacsclient="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
-    # alias e="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -t"
-else
-    PATH=/usr/local/bin:$PATH
-    alias e="emacsclient -t"
-fi
+export SHELL=/usr/local/bin/zsh
+export TERM=xterm-256color
 
-disable r
-alias r="rails"
-alias ll="ls -alG"
-alias ls="ls -G"
-alias grep="grep --color=auto"
-alias git diff="git diff --color-words"
+# Path to your oh-my-zsh installation.
+export ZSH=$HOME/.oh-my-zsh
 
-# プロンプトのカラー表示を有効
-autoload -U colors
-colors
+# Set name of the theme to load.
+# Look in ~/.oh-my-zsh/themes/
+# Optionally, if you set this to "random", it'll load a random theme each
+# time that oh-my-zsh is loaded.
+# ZSH_THEME="robbyrussell"
+ZSH_THEME="gianu"
 
-## 補完時に大小文字を区別しない
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-zstyle ':completion:*' menu select=1
+# Example aliases
+# alias zshconfig="mate ~/.zshrc"
+# alias ohmyzsh="mate ~/.oh-my-zsh"
 
-autoload -U compinit && compinit
+# Uncomment the following line to use case-sensitive completion.
+# CASE_SENSITIVE="true"
 
-## options
-setopt BASH_AUTO_LIST
-setopt LIST_AMBIGUOUS
-setopt AUTO_PUSHD
+# Uncomment the following line to disable bi-weekly auto-update checks.
+# DISABLE_AUTO_UPDATE="true"
 
-## history
-HISTFILE="$HOME/.zsh_history"
-HISTSIZE=16384
-SAVEHIST=16384
-setopt hist_ignore_all_dups
-setopt hist_reduce_blanks
-setopt share_history
+# Uncomment the following line to change how often to auto-update (in days).
+# export UPDATE_ZSH_DAYS=13
 
+# Uncomment the following line to disable colors in ls.
+# DISABLE_LS_COLORS="true"
 
-# PROMPT
+# Uncomment the following line to disable auto-setting terminal title.
+# DISABLE_AUTO_TITLE="true"
 
-#PS1="[@${HOST%%.*} %1~]%(!.#.$) " # この辺は好み
-case "$TERM" in
-    xterm*|kterm*|rxvt*)
-    PROMPT=$(print "%B%{\e[34m%}%m:(´・ω・｀):%(5~,%-2~/.../%2~,%~)%{\e[33m%}%# %b")
-    PROMPT=$(print "%{\e]2;%n@%m:(´・ω・｀): %~\7%}$PROMPT") # title bar
-    ;;
-    *)
-    PROMPT='%m:%c%# '
-    ;;
-esac
+# Uncomment the following line to disable command auto-correction.
+# DISABLE_CORRECTION="true"
 
-RPROMPT="%T"                      # 右側に時間を表示する
+# Uncomment the following line to display red dots whilst waiting for completion.
+# COMPLETION_WAITING_DOTS="true"
 
-setopt transient_rprompt          # 右側まで入力がきたら時間を消す
+# Uncomment the following line if you want to disable marking untracked files
+# under VCS as dirty. This makes repository status check for large repositories
+# much, much faster.
+# DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-setopt prompt_subst               # 便利なプロント
+# Uncomment the following line if you want to change the command execution time
+# stamp shown in the history command output.
+# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+# HIST_STAMPS="mm/dd/yyyy"
 
-bindkey -e                        # emacsライクなキーバインド
+# Would you like to use another custom folder than $ZSH/custom?
+# ZSH_CUSTOM=/path/to/new-custom-folder
 
+# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+plugins=(git)
 
+source $ZSH/oh-my-zsh.sh
 
-#export LANG=ja_JP.UTF-8           # 日本語環境
-##emacs fatal error 11 回避
-alias edit='DISPLAY=${DISPLAY/*:/:} emacs'
+# User configuration
 
+export PATH="/Users/richmedia/.rbenv/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/Users/richmedia/.rbenv/shims:/Users/richmedia/.rbenv/bin"
+# export MANPATH="/usr/local/man:$MANPATH"
 
-export EDITOR='emacs'               # エディタはemacs
-#export EDITOR=vim               # エディタはemacs
+# You may need to manually set your language environment
+# export LANG=en_US.UTF-8
 
+# Preferred editor for local and remote sessions
+# if [[ -n $SSH_CONNECTION ]]; then
+#   export EDITOR='vim'
+# else
+#   export EDITOR='mvim'
+# fi
 
+# Compilation flags
+# export ARCHFLAGS="-arch x86_64"
 
-autoload -U compinit              # 強力な補完機能
-
-compinit -u                       # このあたりを使わないとzsh使ってる意味なし
-
-setopt autopushd          # cdの履歴を表示
-
-setopt pushd_ignore_dups          # 同ディレクトリを履歴に追加しない
-
-setopt auto_cd                    # 自動的にディレクトリ移動
-
-setopt list_packed   # リストを詰めて表示
-
-setopt list_types                 # 補完一覧ファイル種別表示
-
-
-
-# 履歴
-
-HISTFILE=~/.zsh_history           # historyファイル
-
-HISTSIZE=10000                    # ファイルサイズ
-
-SAVEHIST=10000                    # saveする量
-
-setopt hist_ignore_dups           # 重複を記録しない
-
-setopt hist_reduce_blanks         # スペース排除
-
-setopt share_history              # 履歴ファイルを共有
-
-setopt EXTENDED_HISTORY           # zshの開始終了を記録
-
-
-
-# history 操作まわり
-
-autoload history-search-end
-
-zle -N history-beginning-search-backward-end history-search-end
-
-zle -N history-beginning-search-forward-end history-search-end
-
-bindkey "^P" history-beginning-search-backward-end
-
-bindkey "^N" history-beginning-search-forward-end
-
-# ビープ音を消す
-setopt nolistbeep
-
-zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
-
-
-[ -f ~/.zshrc.include ] && source ~/.zshrc.include # 設定ファイルのinclude
-
-# rbenv
-if [[ "${OSTYPE}" = darwin* ]] ; then
-    export PATH="$HOME/.rbenv/bin:$PATH"
-    eval "$(rbenv init - zsh)"
-else
-    eval "$(rbenv init - zsh)"
-fi
-
-#octave用
-#export GNUTERM=x11
-
-export PGHOST=localhost
-export PGDATA=/usr/local/var/postgres
-
-# emacs daemon
-if [[ "${OSTYPE}" = darwin* ]] ; then
-    if ps aux | grep -e "/MacOS/Emacs -nw --daemon=^J3,4^J" | grep -v "grep" >/dev/null 2>&1; then
-    else
-        emacs --daemon >/dev/null 2>&1
-    fi
-else
-    if ps aux | grep -e "emacs --daemon$" >/dev/null 2>&1; then
-    else
-        emacs --daemon >/dev/null 2>&1
-    fi
-fi
-
-# tmux auto start
-if [[ "${OSTYPE}" = darwin* ]] ; then
-else
-    if [ -z "$TMUX" -a -z "$STY" ]; then
-        if type tmux >/dev/null 2>&1; then
-            if tmux has-session && tmux list-sessions | grep -qE '.*]'; then
-                tmux attach && echo "tmux attached session "
-            else
-                tmux new-session && echo "tmux created new session"
-            fi
-        fi
-    fi
-fi
+# ssh
+# export SSH_KEY_PATH="~/.ssh/dsa_id"
