@@ -1,0 +1,10 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: doc-method
+# key: doc-method
+# --
+/**
+ * ${description}
+ * 
+ * @param ${type} ${variable}
+ * @return ${type} ${desctiption}
+ */

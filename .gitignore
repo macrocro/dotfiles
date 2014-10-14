@@ -11,3 +11,5 @@
 
 .emacs.d/history
 .emacs.d/auto-save-list/*
+.emacs.d/.mc-lists.el
+.emacs.d/ac-comphist.dat

@@ -1,325 +1,358 @@
-(setq load-path (cons "~/.emacs.d/elisp" load-path))
+;;; package --- summary
+;;; Commentary:
 
-(require 'install-elisp)
-(setq install-elisp-repository-directory "~/.emacs.d/elisp")
+;; keybinding の設定は
+;; M-x help-for-help-internal
+;; push k
+;; 調べたいkeybinding入力
 
-;;php-modeの設定
+;; Emacs server
+(require 'server)
+;; 複数サーバ起動を防ぐ
+(unless (server-running-p)
+  (server-start))
 
-;; php-mode
-(require 'php-mode)
-(add-hook 'php-mode-hook
-          '(lambda ()
-             (setq php-mode-force-pear t)
-             (c-set-style "stroustrup")
-             (c-set-offset 'comment-intro 0)
-             (require 'php-completion)
-             (php-completion-mode t)
-             (define-key php-mode-map (kbd "C-o") 'phpcmp-complete)
-             ;;インデントの幅はスペースで２つ分
-             (setq tab-width 2
-                   c-basic-offset 2
-                   c-hanging-comment-ender-p nil
-                   indent-tabs-mode nil)
-             ;; ;;自動改行モード
-             ;; (c-toggle-auto-hungry-state t)
-             ;; (setq c-hanging-braces-alist
-             ;;            '(
-             ;;              (class-open nil)
-             ;;              (class-close nil)
-             ;;              (defun-open before after)
-             ;;              (defun-close nil)
-             ;;              (inline-open nil)
-             ;;              (inline-close nil)
-             ;;              (brace-list-open nil)
-             ;;              (brace-list-close nil)
-             ;;              (block-open nil)
-             ;;              (block-close nil)
-             ;;              (substatement-open before after)
-             ;;              (statement-case-open before after)
-             ;;              (extern-lang-open nil)
-             ;;              (extern-lang-close nil)
-             ;;              ))
-             (when (require 'auto-complete nil t)
-               (make-variable-buffer-local 'ac-sources)
-               (add-to-list 'ac-sources 'ac-source-php-completion)
-               (auto-complete-mode t))
-             ))
+;;; init.el
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
 
-;;
-(require 'smartchr)
-
-(defun my-smartchr-setting ()
-  (local-set-key (kbd "(") (smartchr '("(`!!')" "(")))
-  (local-set-key (kbd "{") (smartchr '("{\n  `!!' \n}")))
-  (local-set-key (kbd "[") (smartchr '("[`!!']" "[")))
-  (local-set-key (kbd "\"") (smartchr '("\"`!!'\"" "\"")))
-  (local-set-key (kbd "\'") (smartchr '("\'`!!'\'" "\'")))
-  )
-
-(add-hook 'php-mode-hook 'my-smartchr-setting)
-
-
-;; 行番号を指定して移動する機能をM-g gに割り当て
-(global-set-key "\M-g g" 'goto-line)
-;; Win環境のようにShift+矢印キーで選択動作させる
-(pc-selection-mode)
-;;; 対応する括弧を光らせる。
-(show-paren-mode 1)
-;;; 終了時にオートセーブファイルを消す
-(setq delete-auto-save-files t)
-;;; 現在行を目立たせる;;現在行の下線を目立たせる
-(global-hl-line-mode)
-(setq hl-line-face 'underline)
-;;; カーソルの位置が何文字目かを表示する
-(column-number-mode t)
-;;; カーソルの位置が何行目かを表示する
-(line-number-mode t)
-;;; カーソルの場所を保存する
-(require 'saveplace)
-(setq-default save-place t)
-;;; 現在の関数名をモードラインに表示
-(which-function-mode 1)
-;;; ファイル名が重複していたらディレクトリ名を追加する。
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
-;;; 最近使ったファイルを保存(M-x recentf-open-filesで開く)
-(recentf-mode)
-;;find-fileで大文字小文字を区別しない
-(setq completion-ignore-case t)
-;;; 履歴数を大きくする
-(setq history-length 10000)
-;;; ミニバッファの履歴を保存する
-(savehist-mode 1)
-;;; 最近開いたファイルを保存する数を増やす
-(setq recentf-max-saved-items 10000)
-;;;php-mode時のタブの調整
-;;(setq tab-width 2)
-
-;;改行インデント
-(global-set-key "\C-m" 'newline-and-indent)
-
-
-;;CSSの設定
-(autoload 'css-mode "css-mode")
-(setq auto-mode-alist
-      (cons '("\\.css\\'" . css-mode) auto-mode-alist))
-(setq cssm-indent-function #'cssm-c-style-indenter)
-
-(set-language-environment "Japanese")
+;;; Coding system.
 (set-default-coding-systems 'utf-8)
+(set-keyboard-coding-system 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-buffer-file-coding-system 'utf-8)
-(prefer-coding-system 'utf-8-unix)
-(set-keyboard-coding-system 'utf-8)
-(setq default-buffer-file-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
 
-;; (set-default-coding-systems 'sjis-dos)
-;; (set-terminal-coding-system 'sjis-dos)
-;; (set-buffer-file-coding-system 'sjis-dos)
-;; (prefer-coding-system 'sjis-dos)
-;; (set-keyboard-coding-system 'sjis-dos)
-;; (setq default-buffer-file-coding-system 'sjis-dos)
-
-
-;;色関係の設定
-;;color-theme
+;; color-theme
 (require 'color-theme)
-(eval-after-load "color-theme"
-  '(progn
-     (color-theme-initialize)
-     (color-theme-dark-laptop)))
-(custom-set-faces
- '(default ((t
-;;             (:background "black" :foreground "#55FF55")
-             ))))
-;; デフォルトの透明度を設定する (85%)
-(add-to-list 'default-frame-alist '(alpha . 85))
+(color-theme-initialize)
+(add-to-list 'custom-theme-load-path
+             (file-name-as-directory "~/.emacs.d/replace-colorthemes"))
+(load-theme 'comidia t)
+(enable-theme 'comidia)
 
-;; カレントウィンドウの透明度を変更する (85%)
-;; (set-frame-parameter nil 'alpha 0.85)
-(set-frame-parameter nil 'alpha 85)
+;; auto complete
+;;http://cx4a.org/software/auto-complete/manual.ja.html
+(require 'auto-complete-config)
 
-;;shell-popに4mと出る問題回避
-(setq system-uses-terminfo nil)
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-20140519.650/dict/")
+(ac-config-default)
 
-;;ミニバッファーの色を白黒に固定
-(set-face-foreground 'minibuffer-prompt "white")
-(set-face-background 'minibuffer-prompt "black")
+(global-auto-complete-mode)
 
-;;最近使ったファイルにアクセスする
-(require 'anything-startup)
-(require 'recentf-ext)
+;ヘルプを表示
+;デフォルトの情報源を指定
+(setq-default ac-sources '(ac-source-files-in-current-dir ac-source-dictionary ac-source-words-in-all-buffer))
 
-;;linum　行番号の表示
+;;auto-completeが有効にならないモードで有効に
+(add-to-list 'ac-modes 'conf-mode)
+(add-to-list 'ac-modes 'conf-space-mode)
+(add-to-list 'ac-modes 'fundamental-mode)
+(add-to-list 'ac-modes 'processing-mode)
+(add-to-list 'ac-modes 'shell-script-mode)
+(add-to-list 'ac-modes 'text-mode)
+
+(ac-set-trigger-key "TAB")
+(define-key ac-completing-map(kbd "C-n") 'ac-next)
+(define-key ac-completing-map(kbd "C-p") 'ac-previous)
+(define-key ac-mode-map(kbd "C-'") 'auto-complete)
+(define-key ac-mode-map(kbd "M-'") 'ac-fuzzy-complete)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; Mavericks用デフォルトディレクトリを"~/"にする
+(setq inhibit-splash-screen t)
+(defun cd-to-homedir-all-buffers ()
+  "Change every current directory of all buffers to the home directory."
+  (mapc
+   (lambda (buf) (set-buffer buf) (cd (expand-file-name "~"))) (buffer-list)))
+(add-hook 'after-init-hook 'cd-to-homedir-all-buffers)
+
+;; '¥' を入力したら '\' となるように
+(define-key global-map [?¥] [?\\])
+
+;; 警告音もフラッシュも全て無効
+(setq ring-bell-function 'ignore)
+
+;; バッファの同一ファイル名を区別する
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+
+;;; 現在行を目立たせる
+;; (global-hl-line-mode)
+
+;; Window 分割を画面サイズに従って計算する
+(defun split-window-vertically-n (num_wins)
+  (interactive "p")
+  (if (= num_wins 2)
+      (split-window-vertically)
+    (progn
+      (split-window-vertically
+       (- (window-height) (/ (window-height) num_wins)))
+      (split-window-vertically-n (- num_wins 1)))))
+(defun split-window-horizontally-n (num_wins)
+  (interactive "p")
+  (if (= num_wins 2)
+      (split-window-horizontally)
+    (progn
+      (split-window-horizontally
+       (- (window-width) (/ (window-width) num_wins)))
+      (split-window-horizontally-n (- num_wins 1)))))
+
+;; Window 分割・移動を C-t で
+(defun other-window-or-split ()
+  (interactive)
+  (when (one-window-p)
+    (if (>= (window-body-width) 270)
+        (split-window-horizontally-n 3)
+      (split-window-horizontally)))
+  (other-window 1))
+(global-set-key (kbd "C-t") 'other-window-or-split)
+
+;; バックアップファイルを作らないようにする
+(setq make-backup-files nil)
+;;; 終了時にオートセーブファイルを消す
+(setq delete-auto-save-files t)
+
+;; anzu
+(global-anzu-mode +1)
+
+;; 行表示
 (require 'linum)
-(global-linum-mode t)
+(global-linum-mode)
 (setq linum-format "%4d ")
 
-;;C-hで文字backspace
-(global-set-key "\C-h" 'backward-delete-char)
+;; helm
+;; http://d.hatena.ne.jp/a_bicky/20140104/1388822688
+(when (require 'helm-config nil t)
+  (helm-mode 1)
 
-;;ミニバッファーで階層ごとに削除
-(defun my-minibuffer-delete-parent-directory ()
-  "Delete one level of file path."
+  (define-key global-map (kbd "M-x")     'helm-M-x)
+  (define-key global-map (kbd "C-x C-f") 'helm-find-files)
+  (define-key global-map (kbd "C-x C-r") 'helm-recentf)
+  (define-key global-map (kbd "M-y")     'helm-show-kill-ring)
+  (define-key global-map (kbd "C-c i")   'helm-imenu)
+  (define-key global-map (kbd "C-x C-b")   'helm-buffers-list)
+
+  (define-key helm-map (kbd "C-h") 'delete-backward-char)
+  (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
+  (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
+  (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
+  ;; recentf 件数
+  (setq recentf-max-saved-items 1000)
+  ;; Disable helm in some functions
+  (add-to-list 'helm-completing-read-handlers-alist '(find-alternate-file . nil))
+
+  ;; Emulate `kill-line' in helm minibuffer
+  (setq helm-delete-minibuffer-contents-from-point t)
+  (defadvice helm-delete-minibuffer-contents (before helm-emulate-kill-line activate)
+    "Emulate `kill-line' in helm minibuffer"
+    (kill-new (buffer-substring (point) (field-end))))
+
+  (defadvice helm-ff-kill-or-find-buffer-fname (around execute-only-if-exist activate)
+    "Execute command only if CANDIDATE exists"
+    (when (file-exists-p candidate)
+      ad-do-it))
+
+  (defadvice helm-ff-transform-fname-for-completion (around my-transform activate)
+    "Transform the pattern to reflect my intention"
+    (let* ((pattern (ad-get-arg 0))
+           (input-pattern (file-name-nondirectory pattern))
+           (dirname (file-name-directory pattern)))
+      (setq input-pattern (replace-regexp-in-string "\\." "\\\\." input-pattern))
+      (setq ad-return-value
+            (concat dirname
+                    (if (string-match "^\\^" input-pattern)
+                        ;; '^' is a pattern for basename
+                        ;; and not required because the directory name is prepended
+                        (substring input-pattern 1)
+                      (concat ".*" input-pattern)))))))
+
+;; backspace C-h
+(global-set-key "\C-h" 'delete-backward-char)
+
+;; rainbow-delimiters
+(require 'rainbow-delimiters)
+(global-rainbow-delimiters-mode t)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "#7f8c8d")))))
+;文字列の色と被るため,変更
+
+;; かっこ対応
+;; (require 'smartparens-config)
+;; (smartparens-global-mode)
+(require 'autopair)
+(autopair-global-mode)
+
+;; flycheck
+(add-hook 'after-init-hook #'global-flycheck-mode)
+(add-hook 'ruby-mode-hook 'flycheck-mode)
+(add-hook 'php-mode-hook 'flycheck-mode)
+
+;; powerline
+(require 'powerline)
+(powerline-default-theme)
+
+;; split-view move
+(global-set-key (kbd "C-x b")   'windmove-left)
+(global-set-key (kbd "C-x f")   'windmove-right)
+(global-set-key (kbd "C-x p")   'windmove-up)
+(global-set-key (kbd "C-x n")   'windmove-down)
+(setq windmove-wrap-around t) ;反対に移動
+(global-set-key (kbd "C-x C-o") 'other-window) ;デフォルトの移動キーバインドを変更
+(global-set-key (kbd "C-M-i") 'other-window) ;デフォルトの移動キーバインドを変更
+
+
+;; web mode
+;; http://web-mode.org/
+;; http://yanmoo.blogspot.jp/2013/06/html5web-mode.html
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.ctp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+
+;; web-modeの設定
+(defun web-mode-hook ()
+  (setq web-mode-markup-indent-offset 4)
+  (setq web-mode-css-indent-offset 4)
+  (setq web-mode-code-indent-offset 4)
+  (setq web-mode-php-offset 4)  
+  (setq web-mode-engines-alist
+        '(("php"    . "\\.ctp\\'"))
+        )
+  )
+(add-hook 'web-mode-hook  'web-mode-hook)
+;; 色の設定
+(custom-set-faces
+ '(web-mode-doctype-face
+   ((t (:foreground "#82AE46"))))
+ '(web-mode-html-tag-face
+   ((t (:foreground "#E6B422" :weight bold))))
+ '(web-mode-html-attr-name-face
+   ((t (:foreground "#C97586"))))
+ '(web-mode-html-attr-value-face
+   ((t (:foreground "#82AE46"))))
+ '(web-mode-comment-face
+   ((t (:foreground "#D9333F"))))
+ '(web-mode-server-comment-face
+   ((t (:foreground "#D9333F"))))
+ '(web-mode-css-rule-face
+   ((t (:foreground "#A0D8EF"))))
+ '(web-mode-css-pseudo-class-face
+   ((t (:foreground "#FF7F00"))))
+ '(web-mode-css-at-rule-face
+   ((t (:foreground "#FF7F00"))))
+)
+
+
+;; http://dev.ariel-networks.com/wp/documents/aritcles/emacs/part16
+;; リスト9 範囲指定していないとき、C-wで前の単語を削除
+(defadvice kill-region (around kill-word-or-kill-region activate)
+  (if (and (interactive-p) transient-mark-mode (not mark-active))
+      (backward-kill-word 1)
+    ad-do-it))
+;; minibuffer用
+(define-key minibuffer-local-completion-map "\C-w" 'backward-kill-word)
+
+;; リスト10 カーソル位置の単語を削除
+(defun kill-word-at-point ()
   (interactive)
-  (let ((current-pt (point)))
-    (when (re-search-backward "/[^/]+/?" nil t)
-      (forward-char 1)
-      (delete-region (point) current-pt))))
-(define-key minibuffer-local-map (kbd "M-^") 'my-minibuffer-delete-parent-directory)
+  (let ((char (char-to-string (char-after (point)))))
+    (cond
+     ((string= " " char) (delete-horizontal-space))
+     ((string-match "[\t\n -@\[-`{-~]" char) (kill-word 1))
+     (t (forward-char) (backward-word) (kill-word 1)))))
+(global-set-key "\M-d" 'kill-word-at-point)
 
-;;デフォルトのC-x bをanything-for-filesに変える
-(define-key global-map (kbd "\C-x C-b") 'anything-for-files)
+;; http://qiita.com/ballforest/items/b3ea0af59dea465afcec
+(require 'iedit)
 
-;;; 行の先頭でC-kを一回押すだけで行全体を消去する
-(setq kill-whole-line t)
+;; snippet
+(require 'yasnippet)
+(setq yas-snippet-dirs
+      '("~/.emacs.d/snippets"
+	"~/.emacs.d/snippets/php-mode"
+        "~/.emacs.d/plugins/yasnippet-snippets"
+        ))
+(yas-global-mode 1)
+(custom-set-variables '(yas-trigger-key "TAB"))
+;; 既存スニペットを挿入する
+(define-key yas-minor-mode-map (kbd "C-x i i") 'yas-insert-snippet)
+;; 新規スニペットを作成するバッファを用意する
+(define-key yas-minor-mode-map (kbd "C-x i n") 'yas-new-snippet)
+;; 既存スニペットを閲覧・編集する
+(define-key yas-minor-mode-map (kbd "C-x i v") 'yas-visit-snippet-file)
 
-;; 最終行に必ず一行挿入する
-(setq require-final-newline t)
+;; PHP Auto Yasnippets
+(require 'php-auto-yasnippets)
+(setq php-auto-yasnippet-php-program
+      "~/.emacs.d/elpa/php-auto-yasnippets-20140704.1242/Create-PHP-YASnippet.php")
+(define-key php-mode-map (kbd "C-c C-y") 'yas/create-php-snippet)
+(define-key php-mode-map (kbd "C-c C-c") 'yas/create-php-snippet)
 
-;; shell の存在を確認
-(defun skt:shell ()
-  (or (executable-find "zsh")
-      (executable-find "bash")
-      ;; (executable-find "f_zsh") ;; Emacs + Cygwin を利用する人は Zsh の代りにこれにしてください
-      ;; (executable-find "f_bash") ;; Emacs + Cygwin を利用する人は Bash の代りにこれにしてください
-      (executable-find "cmdproxy")
-      (error "can't find 'shell' command in PATH!!")))
-
-;; Shell 名の設定
-(setq shell-file-name (skt:shell))
-(setenv "SHELL" shell-file-name)
-(setq explicit-shell-file-name shell-file-name)
-;; Emacs が保持する terminfo を利用する
-(setq system-uses-terminfo nil)
-;;エスケープを綺麗に表示する
-(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-;;shellの呼び出しキーバインド
-(global-set-key (kbd "C-c t") '(lambda ()
-                                 (interactive)
-                                 (term shell-file-name)))
-
-;;shell-popの設定
-(require 'shell-pop)
-(shell-pop-set-internal-mode "ansi-term")
-(shell-pop-set-internal-mode-shell "/bin/zsh")
-(shell-pop-set-window-height 50)
-(defvar ansi-term-after-hook nil)
-(add-hook 'ansi-term-after-hook
-          (function
-           (lambda ()
-             (define-key term-raw-map "\C-t" 'shell-pop))))
-(defadvice ansi-term (after ansi-term-after-advice (arg))
-  "run hook as after advice"
-  (run-hooks 'ansi-term-after-hook))
-(ad-activate 'ansi-term)
-
-(global-set-key "\C-t" 'shell-pop)
-
-;;auto-saveの設定
-;; (require 'auto-save-buffers)
-;; (run-with-idle-timer 1.0 t 'auto-save-buffers)
-
-;; @ hideshow/fold-dwim.el
-;;使い方
-;;折畳みと展開を切り替える
-;;M-x fold-dwim-toggle
-;;全てのコードブロックを展開
-;;M-x fold-dwim-show-all
-;;全てのコードブロックを折畳む
-;;M-x fold-dwim-hide-all
-(when (require 'fold-dwim nil t)
-  (require 'hideshow nil t)
-  ;; 機能を利用するメジャーモード一覧
-  (let ((hook))
-    (dolist (hook
-             '(emacs-lisp-mode-hook
-               c-mode-common-hook
-               python-mode-hook
-               php-mode-hook
-               ruby-mode-hook
-               js2-mode-hook
-               css-mode-hook
-               apples-mode-hook))
-      (add-hook hook 'hs-minor-mode))))
-(define-key global-map (kbd "\C-c C-]") 'fold-dwim-toggle)
-
-;;browse-kill-ring
-(require 'browse-kill-ring)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;; ruby ;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;  http://d.hatena.ne.jp/yuko1658/20071213/1197517201 ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; ruby-mode
-(autoload 'ruby-mode "ruby-mode"
-  "Mode for editing ruby source files" t)
-(setq auto-mode-alist
-      (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
-(setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
-                                     interpreter-mode-alist))
-(autoload 'run-ruby "inf-ruby"
-  "Run an inferior Ruby process")
-(autoload 'inf-ruby-keys "inf-ruby"
-  "Set local key defs for inf-ruby in ruby-mode")
-(add-hook 'ruby-mode-hook
-          '(lambda () (inf-ruby-keys)))
-
-;; ruby-electric
-(require 'ruby-electric)
-(add-hook 'ruby-mode-hook '(lambda () (ruby-electric-mode t)))
-
-;; rubydb
-(autoload 'rubydb "rubydb3x"
-  "run rubydb on program file in buffer *gud-file*.
-the directory containing file becomes the initial working directory
-and source-file directory for your debugger." t)
-
-;; rails
-(defun try-complete-abbrev (old)
-  (if (expand-abbrev) t nil))
-(setq hippie-expand-try-functions-list
-      '(try-complete-abbrev
-        try-complete-file-name
-        try-expand-dabbrev))
-(setq rails-use-mongrel t)
-(require 'rails)
+(add-hook 'php-mode-hook
+          (lambda ()
+            (defun ywb-php-lineup-arglist-intro (langelem)
+              (save-excursion
+                (goto-char (cdr langelem))
+                (vector (+ (current-column) c-basic-offset))))
+            (defun ywb-php-lineup-arglist-close (langelem)
+              (save-excursion
+                (goto-char (cdr langelem))
+                (vector (current-column))))
+            (c-set-style "stroustrup")    ; インデントは4文字分基本スタイル
+            (c-set-offset 'arglist-intro 'ywb-php-lineup-arglist-intro) ; 配列のインデント関係
+            (c-set-offset 'arglist-close 'ywb-php-lineup-arglist-close) ; 配列のインデント関係
+            (c-set-offset 'arglist-cont-nonempty' 4) ; 配列のインデント関係
+            (c-set-offset 'case-label' 4) ; case はインデントする
+            (make-local-variable 'tab-width)
+            (make-local-variable 'indent-tabs-mode)
+            (setq tab-width 4)
+            ;; (setq indent-tabs-mode t); インデントにタブを使う
+	    ))   
 
 
-;;ruby-block
-(require 'ruby-block)
-(ruby-block-mode t)
-;; ミニバッファに表示し, かつ, オーバレイする.
-(setq ruby-block-highlight-toggle t)
+;; emmet-mode
+(require 'emmet-mode)
+(add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
+(add-hook 'css-mode-hook  'emmet-mode) ;; enable Emmet's css abbreviation.
+(add-hook 'php-mode-hook  'emmet-mode)
+(add-hook 'emmet-mode-hook (lambda () (setq emmet-indentation 4))) ;; indent 4 spaces.
+(setq emmet-move-cursor-between-quotes t) ;; default nil
+(eval-after-load "emmet-mode"
+  '(define-key emmet-mode-keymap (kbd "C-j") nil)) ;; C-j は newline-and-indent のままにしておく
+;; (keyboard-translate ?\C-i ?\H-i) ;;C-i と Tabの被りを回避
+(define-key emmet-mode-keymap (kbd "C-x C-i") 'emmet-expand-line) ;; C-x C-i で展開
+;; ac-emmet
+(setq web-mode-ac-sources-alist
+  '(("php" . (ac-source-yasnippet ac-source-php-auto-yasnippets))
+    ("html" . (ac-source-emmet-html-aliases ac-source-emmet-html-snippets))
+    ("css" . (ac-source-css-property ac-source-emmet-css-snippets))))
+(add-hook 'web-mode-before-auto-complete-hooks
+          '(lambda ()
+             (let ((web-mode-cur-language
+                    (web-mode-language-at-pos)))
+               (if (string= web-mode-cur-language "php")
+                   (yas-activate-extra-mode 'php-mode)
+                 (yas-deactivate-extra-mode 'php-mode))
+               (if (string= web-mode-cur-language "css")
+                   (setq emmet-use-css-transform t)
+                 (setq emmet-use-css-transform nil)))))
 
-;; ECB
-;; (setq load-path (cons (expand-file-name "~/.emacs.d/elisp/ecb-2.32") load-path))
-;; (load-file "~/.emacs.d/elisp/cedet-1.0pre3/common/cedet.el")
-;; (setq semantic-load-turn-useful-things-on t)
-;; (require 'ecb)
-;; (setq ecb-tip-of-the-day nil)
-;; (setq ecb-windows-width 0.25)
-;; (defun ecb-toggle ()
-;;   (interactive)
-;;   (if ecb-minor-mode
-;;       (ecb-deactivate)
-;;     (ecb-activate)))
-;; (global-set-key [f2] 'ecb-toggle)
+;; quickrun
+(require 'quickrun)
 
+(require 'e2wm)
+(global-set-key (kbd "M-+") 'e2wm:start-management)
 
-;;; *.~ とかのバックアップファイルを作らない
-(setq make-backup-files nil)
-;;; .#* とかのバックアップファイルを作らない
-(setq auto-save-default nil)
-
-;; ange-ftp
-;; (require 'ange-ftp)
-;; (setq ange-ftp-default-user "i.am.blue.marlin@gmail.com")
-;; (ange-ftp-set-passwd "www8.sitemix.jp" "i.am.blue.marlin@gmail.com" "ooc62349")
-
-;; (setq ange-ftp-default-user "root")
-;; (ange-ftp-set-passwd "bihadayousei.info" "root" "ff96zuw8rb")
-
+(provide 'init)

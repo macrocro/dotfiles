@@ -62,7 +62,7 @@ bindkey -e                        # emacsライクなキーバインド
 
 
 
-#export LANG=ja_JP.UTF-8           # 日本語環境
+export LANG=ja_JP.UTF-8           # 日本語環境
 ##emacs fatal error 11 回避
 alias edit='DISPLAY=${DISPLAY/*:/:} emacs'
 
@@ -166,3 +166,8 @@ else
         fi
     fi
 fi
+
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
