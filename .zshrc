@@ -59,8 +59,11 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-export PATH="/Users/richmedia/.rbenv/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/Users/richmedia/.rbenv/shims:/Users/richmedia/.rbenv/bin"
+export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin"
 # export MANPATH="/usr/local/man:$MANPATH"
+
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -77,3 +80,36 @@ fi
 
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
+
+export DOCKER_HOST=tcp://192.168.59.103:2376
+export DOCKER_CERT_PATH=/Users/richmedia/.boot2docker/certs/boot2docker-vm
+export DOCKER_TLS_VERIFY=1
+
+function zip_pass() {
+    # usage : zip_pass encrypt_zip file/dir
+    openssl rand -base64 8 | xargs -Irs ksh -c "zip -r -P rs $1 $2 && echo Password: rs"
+}
+
+docker-enter() {
+    boot2docker ssh '[ -f /var/lib/boot2docker/nsenter ] || docker run --rm -v /var/lib/boot2docker/:/target jpetazzo/nsenter'
+    boot2docker ssh -t sudo /var/lib/boot2docker/docker-enter "$@"
+}
+
+ec2-list() {
+    aws ec2 describe-instances | jq -r '.Reservations[] | .Instances[] | [.PublicIpAddress,.PrivateIpAddress,.InstanceId,.State.Name,"# "+(.Tags[] | select(.Key == "Name") | .Value // "")] | join("\t")'
+}
+ec2-start() {
+    ec2-list | peco | awk '{print $3}' | xargs aws ec2 start-instances --instance-ids
+}
+
+ec2-stop() {
+    ec2-list | peco | awk '{print $3}' | xargs aws ec2 stop-instances --instance-ids
+}
+
+export PATH=$(brew --prefix)/bin:$PATH
+
+export GOPATH=$HOME
+export GOBIN=$HOME/bin
+export PATH="/usr/local/sbin:$PATH"
+
+source /usr/local/share/zsh/site-functions/_aws

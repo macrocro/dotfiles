@@ -353,4 +353,8 @@
 (require 'e2wm)
 (global-set-key (kbd "M-+") 'e2wm:start-management)
 
+;; カーソル行に下線を表示
+(setq hl-line-face 'underline)
+(global-hl-line-mode)
+
 (provide 'init)
