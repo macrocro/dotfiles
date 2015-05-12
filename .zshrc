@@ -96,14 +96,14 @@ docker-enter() {
 }
 
 ec2-list() {
-    aws ec2 describe-instances | jq -r '.Reservations[] | .Instances[] | [.PublicIpAddress,.PrivateIpAddress,.InstanceId,.State.Name,"# "+(.Tags[] | select(.Key == "Name") | .Value // "")] | join("\t")'
+    aws ec2 describe-instances | jq -r '.Reservations[] | .Instances[] | [.InstanceId,.PublicIpAddress,.PrivateIpAddress,.State.Name,"# "+(.Tags[] | select(.Key == "Name") | .Value // "")] | join("\t")'
 }
 ec2-start() {
-    ec2-list | peco | awk '{print $3}' | xargs aws ec2 start-instances --instance-ids
+    ec2-list | peco | awk '{print $1}' | xargs aws ec2 start-instances --instance-ids
 }
 
 ec2-stop() {
-    ec2-list | peco | awk '{print $3}' | xargs aws ec2 stop-instances --instance-ids
+    ec2-list | peco | awk '{print $1}' | xargs aws ec2 stop-instances --instance-ids
 }
 
 export PATH=$(brew --prefix)/bin:$PATH
