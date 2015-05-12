@@ -360,4 +360,8 @@
 	     (setq tab-width 2)
 	     ))
 
+;; カーソル行に下線を表示
+(setq hl-line-face 'underline)
+(global-hl-line-mode)
+
 (provide 'init)

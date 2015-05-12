@@ -1,9 +1,10 @@
-;;; flymake-go-autoloads.el --- automatically extracted autoloads
+;;; go-autocomplete-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
 (add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
 
-;;;### (autoloads nil nil ("flymake-go.el") (21781 15265 524384 0))
+;;;### (autoloads nil nil ("go-autocomplete.el") (21781 15288 328138
+;;;;;;  0))
 
 ;;;***
 
@@ -12,4 +13,4 @@
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
 ;; End:
-;;; flymake-go-autoloads.el ends here
+;;; go-autocomplete-autoloads.el ends here
