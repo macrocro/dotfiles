@@ -193,9 +193,9 @@
 (autopair-global-mode)
 
 ;; flycheck
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(add-hook 'ruby-mode-hook 'flycheck-mode)
-(add-hook 'php-mode-hook 'flycheck-mode)
+;; (add-hook 'after-init-hook #'global-flycheck-mode)
+;; (add-hook 'ruby-mode-hook 'flycheck-mode)
+;; (add-hook 'php-mode-hook 'flycheck-mode)
 
 ;; powerline
 (require 'powerline)
@@ -352,6 +352,13 @@
 
 (require 'e2wm)
 (global-set-key (kbd "M-+") 'e2wm:start-management)
+
+;; go-lang
+(add-hook 'before-save-hook 'gofmt-before-save)
+(add-hook 'go-mode-hook
+	  '(lambda ()
+	     (setq tab-width 2)
+	     ))
 
 ;; カーソル行に下線を表示
 (setq hl-line-face 'underline)
