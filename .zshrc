@@ -99,11 +99,15 @@ ec2-list() {
     aws ec2 describe-instances | jq -r '.Reservations[] | .Instances[] | [.InstanceId,.PublicIpAddress,.PrivateIpAddress,.State.Name,"# "+(.Tags[] | select(.Key == "Name") | .Value // "")] | join("\t")'
 }
 ec2-start() {
-    ec2-list | peco | awk '{print $1}' | xargs aws ec2 start-instances --instance-ids
+    ec2-list | grep stopped | peco | awk '{print $1}' | xargs aws ec2 start-instances --instance-ids
 }
 
 ec2-stop() {
-    ec2-list | peco | awk '{print $1}' | xargs aws ec2 stop-instances --instance-ids
+    ec2-list | grep running | peco | awk '{print $1}' | xargs aws ec2 stop-instances --instance-ids
+}
+
+ec2-ssh() {
+    ssh -i ~/.ssh/docker-registry-hair.pem ec2-user@$(ec2-list | grep running | peco | awk '{print $2}')
 }
 
 export PATH=$(brew --prefix)/bin:$PATH
