@@ -70,9 +70,9 @@ eval "$(rbenv init -)"
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR="emacsclient"
+    export EDITOR="emacsclient"
 else
-  export EDITOR="emacsclient"    
+    export EDITOR="emacsclient"    
 fi
 
 # Compilation flags
@@ -106,10 +106,18 @@ ec2-stop() {
     ec2-list | peco | awk '{print $1}' | xargs aws ec2 stop-instances --instance-ids
 }
 
-export PATH=$(brew --prefix)/bin:$PATH
+case ${OSTYPE} in
+    darwin*)
+        # Setting for Mac OS
+	export PATH=$(brew --prefix)/bin:$PATH
 
-export GOPATH=$HOME
-export GOBIN=$HOME/bin
-export PATH="/usr/local/sbin:$PATH"
+	export GOPATH=$HOME
+	export GOBIN=$HOME/bin
+	export PATH="/usr/local/sbin:$PATH"
 
-source /usr/local/share/zsh/site-functions/_aws
+	source /usr/local/share/zsh/site-functions/_aws
+        ;;
+    linux*)
+        # Setting for Linux
+        ;;
+esac
