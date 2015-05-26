@@ -11,8 +11,10 @@ export ZSH=$HOME/.oh-my-zsh
 # ZSH_THEME="robbyrussell"
 ZSH_THEME="gianu"
 
-# Example aliases
+# aliases
 alias e='emacsclient'
+alias tigs="tig status"
+alias tiga="tig --all"
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
@@ -45,7 +47,7 @@ alias e='emacsclient'
 # Uncomment the following line if you want to change the command execution time
 # stamp shown in the history command output.
 # The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
+HIST_STAMPS="yyyy-mm-dd"
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
