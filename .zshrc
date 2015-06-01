@@ -1,4 +1,3 @@
-export SHELL=/usr/local/bin/zsh
 export TERM=xterm-256color
 
 # Path to your oh-my-zsh installation.
@@ -61,9 +60,6 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin"
-# export MANPATH="/usr/local/man:$MANPATH"
-
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
@@ -114,6 +110,11 @@ ec2-ssh() {
 
 case ${OSTYPE} in
     darwin*)
+	export SHELL=/usr/local/bin/zsh
+	
+	export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin"
+	# export MANPATH="/usr/local/man:$MANPATH"
+	
         # Setting for Mac OS
 	export PATH=$(brew --prefix)/bin:$PATH
 
@@ -124,6 +125,7 @@ case ${OSTYPE} in
 	source /usr/local/share/zsh/site-functions/_aws
         ;;
     linux*)
+	export SHELL=/bin/zsh	
         # Setting for Linux
         ;;
 esac
