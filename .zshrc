@@ -12,7 +12,7 @@ export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="gianu"
 
 # Example aliases
-alias e='emacsclient'
+alias e='emacsclient -nw'
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
