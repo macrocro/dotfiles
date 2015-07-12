@@ -6,6 +6,7 @@
 !/.emacs.d
 !/.zshrc
 !/.tmux.conf
+!/.tmux.conf.osx
 !/.tmux-powerlinerc
 !/.tmux-powerline
 !/.oh-my-zsh

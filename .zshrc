@@ -1,4 +1,3 @@
-export SHELL=/usr/local/bin/zsh
 export TERM=xterm-256color
 
 # Path to your oh-my-zsh installation.
@@ -11,8 +10,11 @@ export ZSH=$HOME/.oh-my-zsh
 # ZSH_THEME="robbyrussell"
 ZSH_THEME="gianu"
 
-# Example aliases
+# aliases
 alias e='emacsclient -nw'
+alias tigs="tig status"
+alias tiga="tig --all"
+
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
@@ -45,7 +47,7 @@ alias e='emacsclient -nw'
 # Uncomment the following line if you want to change the command execution time
 # stamp shown in the history command output.
 # The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
+HIST_STAMPS="yyyy-mm-dd"
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
@@ -59,9 +61,6 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin"
-# export MANPATH="/usr/local/man:$MANPATH"
-
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
@@ -70,9 +69,9 @@ eval "$(rbenv init -)"
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR="emacsclient"
+    export EDITOR="emacsclient"
 else
-  export EDITOR="emacsclient"    
+    export EDITOR="emacsclient"
 fi
 
 # Compilation flags
@@ -99,17 +98,35 @@ ec2-list() {
     aws ec2 describe-instances | jq -r '.Reservations[] | .Instances[] | [.InstanceId,.PublicIpAddress,.PrivateIpAddress,.State.Name,"# "+(.Tags[] | select(.Key == "Name") | .Value // "")] | join("\t")'
 }
 ec2-start() {
-    ec2-list | peco | awk '{print $1}' | xargs aws ec2 start-instances --instance-ids
+    ec2-list | grep stopped | peco | awk '{print $1}' | xargs aws ec2 start-instances --instance-ids
 }
 
 ec2-stop() {
-    ec2-list | peco | awk '{print $1}' | xargs aws ec2 stop-instances --instance-ids
+    ec2-list | grep running | peco | awk '{print $1}' | xargs aws ec2 stop-instances --instance-ids
 }
 
-export PATH=$(brew --prefix)/bin:$PATH
+ec2-ssh() {
+    ssh -i ~/.ssh/docker-registry-hair.pem ec2-user@$(ec2-list | grep running | peco | awk '{print $2}')
+}
 
-export GOPATH=$HOME
-export GOBIN=$HOME/bin
-export PATH="/usr/local/sbin:$PATH"
+case ${OSTYPE} in
+    darwin*)
+	export SHELL=/usr/local/bin/zsh
 
-source /usr/local/share/zsh/site-functions/_aws
+	export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin"
+	# export MANPATH="/usr/local/man:$MANPATH"
+
+        # Setting for Mac OS
+	export PATH=$(brew --prefix)/bin:$PATH
+
+	export GOPATH=$HOME
+	export GOBIN=$HOME/bin
+	export PATH="/usr/local/sbin:$PATH"
+
+	source /usr/local/share/zsh/site-functions/_aws
+        ;;
+    linux*)
+	export SHELL=/bin/zsh
+        # Setting for Linux
+        ;;
+esac
