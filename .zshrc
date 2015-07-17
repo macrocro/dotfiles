@@ -83,20 +83,23 @@ fi
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 
-export DOCKER_HOST=tcp://192.168.59.103:2376
-export DOCKER_CERT_PATH=/Users/richmedia/.boot2docker/certs/boot2docker-vm
-export DOCKER_TLS_VERIFY=1
-
-function zip_pass() {
-    # usage : zip_pass encrypt_zip file/dir
-    openssl rand -base64 8 | xargs -Irs ksh -c "zip -r -P rs $1 $2 && echo Password: rs"
+# Docker
+docker-id-names() {
+    docker ps -q | xargs docker inspect --format='{{.Name}}'
 }
+alias din='docker-id-names'
 
-docker-enter() {
-    boot2docker ssh '[ -f /var/lib/boot2docker/nsenter ] || docker run --rm -v /var/lib/boot2docker/:/target jpetazzo/nsenter'
-    boot2docker ssh -t sudo /var/lib/boot2docker/docker-enter "$@"
+docker-exec() {
+    docker exec -i -t $@ bash
 }
+alias de='docker-exec'
 
+alias doco='de $(docker inspect --format="{{.Id}}" $(din|peco|awk "{print \$1}"))'
+
+
+# AWS
+
+## EC2
 ec2-list() {
     aws ec2 describe-instances | jq -r '.Reservations[] | .Instances[] | [.InstanceId,.PublicIpAddress,.PrivateIpAddress,.State.Name,"# "+(.Tags[] | select(.Key == "Name") | .Value // "")] | join("\t")'
 }
@@ -122,8 +125,21 @@ case ${OSTYPE} in
 	export PATH="/usr/local/sbin:$PATH"
 
 	source /usr/local/share/zsh/site-functions/_aws
+
+	alias tmux-copy='tmux save-buffer - | reattach-to-user-namespace pbcopy'
+
+	$(boot2docker shellinit)
         ;;
     linux*)
         # Setting for Linux
         ;;
 esac
+
+# Not general-purpose
+function backlog() {
+    if [[ "$1" =~ "^[0-9]+$" ]]; then
+	open "https://richmedia.backlog.jp/view/HAIR-$1"
+    else
+	open "https://richmedia.backlog.jp/view/$1"
+    fi
+}
