@@ -350,8 +350,8 @@
 ;; quickrun
 (require 'quickrun)
 
-(require 'e2wm)
-(global-set-key (kbd "M-+") 'e2wm:start-management)
+;; (require 'e2wm)
+;; (global-set-key (kbd "M-+") 'e2wm:start-management)
 
 ;; go-lang
 (add-hook 'before-save-hook 'gofmt-before-save)
@@ -363,5 +363,8 @@
 ;; カーソル行に下線を表示
 (setq hl-line-face 'underline)
 (global-hl-line-mode)
+
+;; emphasis trailing space
+(setq-default show-trailing-whitespace t)
 
 (provide 'init)

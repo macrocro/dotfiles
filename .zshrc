@@ -1,4 +1,3 @@
-export SHELL=/usr/local/bin/zsh
 export TERM=xterm-256color
 
 # Path to your oh-my-zsh installation.
@@ -12,9 +11,10 @@ export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="gianu"
 
 # aliases
-alias e='emacsclient'
+alias e='emacsclient -nw'
 alias tigs="tig status"
 alias tiga="tig --all"
+
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
@@ -61,9 +61,6 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin"
-# export MANPATH="/usr/local/man:$MANPATH"
-
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
@@ -74,7 +71,7 @@ eval "$(rbenv init -)"
 if [[ -n $SSH_CONNECTION ]]; then
     export EDITOR="emacsclient"
 else
-    export EDITOR="emacsclient"    
+    export EDITOR="emacsclient"
 fi
 
 # Compilation flags
@@ -117,6 +114,11 @@ ec2-ssh() {
 
 case ${OSTYPE} in
     darwin*)
+	export SHELL=/usr/local/bin/zsh
+
+	export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin"
+	# export MANPATH="/usr/local/man:$MANPATH"
+
         # Setting for Mac OS
 	export PATH=$(brew --prefix)/bin:$PATH
 
@@ -131,6 +133,7 @@ case ${OSTYPE} in
 	$(boot2docker shellinit)
         ;;
     linux*)
+	export SHELL=/bin/zsh
         # Setting for Linux
         ;;
 esac
