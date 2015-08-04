@@ -31,7 +31,7 @@ alias tiga="tig --all"
 # DISABLE_LS_COLORS="true"
 
 # Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
+DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to disable command auto-correction.
 # DISABLE_CORRECTION="true"
@@ -61,11 +61,8 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
-
 # You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
@@ -146,3 +143,6 @@ function backlog() {
 	open "https://richmedia.backlog.jp/view/$1"
     fi
 }
+
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"

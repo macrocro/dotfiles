@@ -19,11 +19,7 @@
 (package-initialize)
 
 ;;; Coding system.
-(set-default-coding-systems 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-buffer-file-coding-system 'utf-8)
-(prefer-coding-system 'utf-8)
+(prefer-coding-system 'utf-8-unix)
 
 ;; color-theme
 (require 'color-theme)
@@ -42,8 +38,8 @@
 
 (global-auto-complete-mode)
 
-;ヘルプを表示
-;デフォルトの情報源を指定
+					;ヘルプを表示
+					;デフォルトの情報源を指定
 (setq-default ac-sources '(ac-source-files-in-current-dir ac-source-dictionary ac-source-words-in-all-buffer))
 
 ;;auto-completeが有効にならないモードで有効に
@@ -83,9 +79,6 @@
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 
-;;; 現在行を目立たせる
-;; (global-hl-line-mode)
-
 ;; Window 分割を画面サイズに従って計算する
 (defun split-window-vertically-n (num_wins)
   (interactive "p")
@@ -104,7 +97,7 @@
        (- (window-width) (/ (window-width) num_wins)))
       (split-window-horizontally-n (- num_wins 1)))))
 
-;; Window 分割・移動を C-t で
+;; Window 分割・移動を C-u で
 (defun other-window-or-split ()
   (interactive)
   (when (one-window-p)
@@ -112,7 +105,7 @@
         (split-window-horizontally-n 3)
       (split-window-horizontally)))
   (other-window 1))
-(global-set-key (kbd "C-t") 'other-window-or-split)
+(global-set-key (kbd "C-u") 'other-window-or-split)
 
 ;; バックアップファイルを作らないようにする
 (setq make-backup-files nil)
@@ -184,7 +177,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#7f8c8d")))))
-;文字列の色と被るため,変更
+					;文字列の色と被るため,変更
 
 ;; かっこ対応
 ;; (require 'smartparens-config)
@@ -193,9 +186,9 @@
 (autopair-global-mode)
 
 ;; flycheck
-;; (add-hook 'after-init-hook #'global-flycheck-mode)
-;; (add-hook 'ruby-mode-hook 'flycheck-mode)
-;; (add-hook 'php-mode-hook 'flycheck-mode)
+(add-hook 'after-init-hook #'global-flycheck-mode)
+(add-hook 'ruby-mode-hook 'flycheck-mode)
+(add-hook 'php-mode-hook 'flycheck-mode)
 
 ;; powerline
 (require 'powerline)
@@ -210,7 +203,6 @@
 (global-set-key (kbd "C-x C-o") 'other-window) ;デフォルトの移動キーバインドを変更
 (global-set-key (kbd "C-M-i") 'other-window) ;デフォルトの移動キーバインドを変更
 
-
 ;; web mode
 ;; http://web-mode.org/
 ;; http://yanmoo.blogspot.jp/2013/06/html5web-mode.html
@@ -218,14 +210,14 @@
 (add-to-list 'auto-mode-alist '("\\.ctp\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\html.erb\\'" . web-mode))
 
 ;; web-modeの設定
 (defun web-mode-hook ()
   (setq web-mode-markup-indent-offset 4)
   (setq web-mode-css-indent-offset 4)
   (setq web-mode-code-indent-offset 4)
-  (setq web-mode-php-offset 4)  
+  (setq web-mode-php-offset 4)
   (setq web-mode-engines-alist
         '(("php"    . "\\.ctp\\'"))
         )
@@ -251,8 +243,7 @@
    ((t (:foreground "#FF7F00"))))
  '(web-mode-css-at-rule-face
    ((t (:foreground "#FF7F00"))))
-)
-
+ )
 
 ;; http://dev.ariel-networks.com/wp/documents/aritcles/emacs/part16
 ;; リスト9 範囲指定していないとき、C-wで前の単語を削除
@@ -317,7 +308,7 @@
             (make-local-variable 'indent-tabs-mode)
             (setq tab-width 4)
             ;; (setq indent-tabs-mode t); インデントにタブを使う
-	    ))   
+	    ))
 
 
 ;; emmet-mode
@@ -333,9 +324,9 @@
 (define-key emmet-mode-keymap (kbd "C-x C-i") 'emmet-expand-line) ;; C-x C-i で展開
 ;; ac-emmet
 (setq web-mode-ac-sources-alist
-  '(("php" . (ac-source-yasnippet ac-source-php-auto-yasnippets))
-    ("html" . (ac-source-emmet-html-aliases ac-source-emmet-html-snippets))
-    ("css" . (ac-source-css-property ac-source-emmet-css-snippets))))
+      '(("php" . (ac-source-yasnippet ac-source-php-auto-yasnippets))
+	("html" . (ac-source-emmet-html-aliases ac-source-emmet-html-snippets))
+	("css" . (ac-source-css-property ac-source-emmet-css-snippets))))
 (add-hook 'web-mode-before-auto-complete-hooks
           '(lambda ()
              (let ((web-mode-cur-language
@@ -363,6 +354,74 @@
 ;; カーソル行に下線を表示
 (setq hl-line-face 'underline)
 (global-hl-line-mode)
+
+;; Rails mode
+(require 'rinari)
+(global-rinari-mode)
+
+;; コントロールシーケンスを利用した色指定が使えるように
+(autoload 'ansi-color-for-comint-mode-on "ansi-color"
+  "Set `ansi-color-for-comint-mode' to t." t)
+
+(add-hook 'shell-mode-hook
+	  '(lambda ()
+	     ;; zsh のヒストリファイル名を設定
+	     (setq comint-input-ring-file-name "~/.zsh_history")
+	     ;; ヒストリの最大数
+	     (setq comint-input-ring-size 1024)
+	     ;; 既存の zsh ヒストリファイルを読み込み
+	     (comint-read-input-ring t)
+	     ;; zsh like completion (history-beginning-search)
+	     (local-set-key "\M-p" 'comint-previous-matching-input-from-input)
+	     (local-set-key "\M-n" 'comint-next-matching-input-from-input)
+	     ;; 色の設定
+	     (setq ansi-color-names-vector
+		   ["#000000"           ; black
+		    "#ff6565"           ; red
+		    "#93d44f"           ; green
+		    "#eab93d"           ; yellow
+		    "#204a87"           ; blue
+		    "#ce5c00"           ; magenta
+		    "#89b6e2"           ; cyan
+		    "#ffffff"]          ; white
+		   )
+	     (ansi-color-for-comint-mode-on)
+	     )
+	  )
+
+(require 'shell-pop)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(shell-pop-shell-type (quote ("ansi-term" "*shell-pop-ansi-term*" (lambda nil (ansi-term shell-pop-term-shell)))))
+ '(shell-pop-term-shell "zsh")
+ '(shell-pop-universal-key "C-]")
+ '(shell-pop-window-size 50)
+ '(shell-pop-full-span t)
+ '(shell-pop-window-position "bottom"))
+
+;; ace-jump
+(unless (package-installed-p 'ace-jump-mode)
+  (package-refresh-contents) (package-install 'ace-jump-mode))
+(require 'ace-jump-mode)
+(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+
+;; neotree
+(unless (package-installed-p 'neotree)
+  (package-refresh-contents) (package-install 'neotree))
+(require 'neotree)
+(global-set-key [f8] 'neotree-toggle)
+
+;; recentf
+(require 'recentf)
+(setq recentf-save-file "~/.emacs.d/.recentf")
+(setq recentf-max-saved-items 1000)
+(setq recentf-exclude '(".recentf"))
+(setq recentf-auto-cleanup 10)
+(run-with-idle-timer 30 t 'recentf-save-list)
+(require 'recentf-ext)
 
 ;; emphasis trailing space
 (setq-default show-trailing-whitespace t)
