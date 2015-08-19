@@ -203,6 +203,9 @@
 (global-set-key (kbd "C-x C-o") 'other-window) ;デフォルトの移動キーバインドを変更
 (global-set-key (kbd "C-M-i") 'other-window) ;デフォルトの移動キーバインドを変更
 
+;; JavaScript
+(add-to-list 'auto-mode-alist '("\\js.erb\\'" . js-mode))
+
 ;; web mode
 ;; http://web-mode.org/
 ;; http://yanmoo.blogspot.jp/2013/06/html5web-mode.html
@@ -358,6 +361,8 @@
 ;; Rails mode
 (require 'rinari)
 (global-rinari-mode)
+;; Rails yasnippet
+(yas/load-directory "~/.emacs.d/plugins/yasnippets-rails/rails-snippets")
 
 ;; コントロールシーケンスを利用した色指定が使えるように
 (autoload 'ansi-color-for-comint-mode-on "ansi-color"
