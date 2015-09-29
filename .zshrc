@@ -93,7 +93,20 @@ alias doco='de $(docker inspect --format="{{.Id}}" $(din|peco|awk "{print \$1}")
 
 # AWS
 set-aws-default-profile() {
-    export AWS_DEFAULT_PROFILE=`egrep '\[[a-z]*\]' ~/.aws/credentials | peco | xargs -Iname expr name : '\[\(.*\)\]'`
+    export AWS_DEFAULT_PROFILE=`egrep '\[.*\]' ~/.aws/credentials | peco | xargs -Iname expr name : '\[\(.*\)\]'`
+}
+
+## EC2-SSH
+ec2-secure-ssh() {
+    MYSECURITYGROUP=`aws ec2 describe-security-groups | jq '.SecurityGroups[] | select(.GroupName|startswith("ssh")) | .GroupId' -r`
+    echo "** security-group: $MYSECURITYGROUP **"
+    MYIP=`curl -s ipconfig.io`
+    echo "** authorize security group for $MYIP **"
+    aws ec2 authorize-security-group-ingress --group-id $MYSECURITYGROUP --protocol tcp --port 22 --cidr $MYIP/32
+    echo "** start ssh **"
+    ssh -i $1 ec2-user@$(ec2-list | grep running | peco | awk '{print $2}')
+    aws ec2 revoke-security-group-ingress --group-id $MYSECURITYGROUP --protocol tcp --port 22 --cidr $MYIP/32
+    echo "** revoke security group for $MYIP **"
 }
 
 ## EC2
