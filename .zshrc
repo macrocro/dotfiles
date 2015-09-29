@@ -92,6 +92,9 @@ alias doco='de $(docker inspect --format="{{.Id}}" $(din|peco|awk "{print \$1}")
 
 
 # AWS
+set-aws-default-profile() {
+    export AWS_DEFAULT_PROFILE=`egrep '\[[a-z]*\]' ~/.aws/credentials | peco | xargs -Iname expr name : '\[\(.*\)\]'`
+}
 
 ## EC2
 ec2-list() {
