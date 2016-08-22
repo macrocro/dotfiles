@@ -1,0 +1,6 @@
+;; -*- emacs-lisp -*- <16/02/02 14:38:08 /Users/youki/.emacs.d/tramp>
+;; Tramp connection history.  Don't change this file.
+;; You can delete it, forcing Tramp to reapply the checks.
+
+((["docker" nil "fc0d4c70ac4f" nil nil]
+  nil))

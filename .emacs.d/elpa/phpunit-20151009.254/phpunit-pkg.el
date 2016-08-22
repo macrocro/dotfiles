@@ -1,0 +1,1 @@
+(define-package "phpunit" "20151009.254" "Launch PHP unit tests using phpunit" '((s "1.9.0") (f "0.16.0") (pkg-info "0.5")) :url "https://github.com/nlamirault/phpunit.el" :keywords '("php" "tests" "phpunit"))
