@@ -6,6 +6,11 @@
 ;; push k
 ;; 調べたいkeybinding入力
 
+(set-terminal-coding-system 'utf-8)
+(prefer-coding-system 'utf-8-unix)
+(set-keyboard-coding-system 'utf-8)
+(setq default-tab-width 2)
+
 ;; Emacs server
 (require 'server)
 ;; 複数サーバ起動を防ぐ
@@ -18,9 +23,6 @@
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
 
-;;; Coding system.
-(prefer-coding-system 'utf-8-unix)
-
 ;; color-theme
 (require 'color-theme)
 (color-theme-initialize)
@@ -30,7 +32,7 @@
 (enable-theme 'comidia)
 
 ;; auto complete
-;;http://cx4a.org/software/auto-complete/manual.ja.html
+;; http://cx4a.org/software/auto-complete/manual.ja.html
 (require 'auto-complete-config)
 
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-20140519.650/dict/")
@@ -38,8 +40,8 @@
 
 (global-auto-complete-mode)
 
-					;ヘルプを表示
-					;デフォルトの情報源を指定
+;; ヘルプを表示
+;; デフォルトの情報源を指定
 (setq-default ac-sources '(ac-source-files-in-current-dir ac-source-dictionary ac-source-words-in-all-buffer))
 
 ;;auto-completeが有効にならないモードで有効に
@@ -56,6 +58,65 @@
 (define-key ac-mode-map(kbd "C-'") 'auto-complete)
 (define-key ac-mode-map(kbd "M-'") 'ac-fuzzy-complete)
 
+;; golang
+(defun my-go-mode-hook ()
+  (setq-default
+   tab-width 2
+   standard-indent 2
+   indent-tabs-mode nil)
+
+																				; Use goimports instead of go-fmt
+  (setq gofmt-command "goimports")
+																				; Call Gofmt before saving
+  (add-hook 'before-save-hook 'gofmt-before-save)
+																				; Customize compile command to run go build
+  (if (not (string-match "go" compile-command))
+      (set (make-local-variable 'compile-command)
+					 "go build -v && go test -v && go vet"))
+																				; Godef jump key binding
+  (local-set-key (kbd "M-.") 'godef-jump))
+(add-hook 'go-mode-hook 'my-go-mode-hook)
+
+;; js2-mode
+(autoload 'js2-mode "js2-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-jsx-mode))
+(add-hook 'js2-mode-hook
+					'(lambda ()
+						 (setq js2-basic-offset 2)))
+
+;; ruby
+(setq ruby-insert-encoding-magic-comment nil)
+
+;; 動かない
+;; リスト10 カーソル位置の単語を削除
+;; (defun kill-word-at-point ()
+;;   (interactive)
+;;   (let ((char (char-to-string (char-after (point)))))
+;;     (cond
+;;      ((string= " " char) (delete-horizontal-space))
+;;      ((string-match "[\t\n -@\[-`{-~]" char) (kill-word 1))
+;;      (t (forward-char) (backward-word) (kill-word 1)))))
+;; (global-set-key "M-d" 'kill-word-at-point)
+
+;; http://dev.ariel-networks.com/wp/documents/aritcles/emacs/part16
+;; リスト9 範囲指定していないとき、C-wで前の単語を削除
+(defadvice kill-region (around kill-word-or-kill-region activate)
+  (if (and (interactive-p) transient-mark-mode (not mark-active))
+      (backward-kill-word 1)
+    ad-do-it))
+;; minibuffer用
+(define-key minibuffer-local-completion-map "\C-w" 'backward-kill-word)
+
+;; バッファの「戻る」と「進む」
+;; (global-set-key (kbd "\M-[") 'switch-to-prev-buffer)
+;; (global-set-key (kbd "\M-]") 'switch-to-next-buffer)
+
+(require 'rainbow-mode)
+(add-hook 'css-mode-hook 'rainbow-mode)
+(add-hook 'scss-mode-hook 'rainbow-mode)
+(add-hook 'php-mode-hook 'rainbow-mode)
+(add-hook 'html-mode-hook 'rainbow-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -169,15 +230,15 @@
 (global-set-key "\C-h" 'delete-backward-char)
 
 ;; rainbow-delimiters
-(require 'rainbow-delimiters)
-(global-rainbow-delimiters-mode t)
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(rainbow-delimiters-depth-1-face ((t (:foreground "#7f8c8d")))))
-					;文字列の色と被るため,変更
+;; (require 'rainbow-delimiters)
+;; (global-rainbow-delimiters-mode t)
+;; (custom-set-faces
+;;  ;; custom-set-faces was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(rainbow-delimiters-depth-1-face ((t (:foreground "#7f8c8d")))))
+;; 																				;文字列の色と被るため,変更
 
 ;; かっこ対応
 ;; (require 'smartparens-config)
@@ -191,8 +252,8 @@
 (add-hook 'php-mode-hook 'flycheck-mode)
 
 ;; powerline
-(require 'powerline)
-(powerline-default-theme)
+;; (require 'powerline)
+;; (powerline-default-theme)
 
 ;; split-view move
 (global-set-key (kbd "C-x b")   'windmove-left)
@@ -201,10 +262,11 @@
 (global-set-key (kbd "C-x n")   'windmove-down)
 (setq windmove-wrap-around t) ;反対に移動
 (global-set-key (kbd "C-x C-o") 'other-window) ;デフォルトの移動キーバインドを変更
-(global-set-key (kbd "C-M-i") 'other-window) ;デフォルトの移動キーバインドを変更
+(global-set-key (kbd "C-\M-i") 'other-window) ;デフォルトの移動キーバインドを変更
 
 ;; JavaScript
 (add-to-list 'auto-mode-alist '("\\js.erb\\'" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . js-mode))
 
 ;; web mode
 ;; http://web-mode.org/
@@ -214,13 +276,14 @@
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\html.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
 
 ;; web-modeの設定
 (defun web-mode-hook ()
-  (setq web-mode-markup-indent-offset 4)
-  (setq web-mode-css-indent-offset 4)
-  (setq web-mode-code-indent-offset 4)
-  (setq web-mode-php-offset 4)
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+  (setq web-mode-php-offset 2)
   (setq web-mode-engines-alist
         '(("php"    . "\\.ctp\\'"))
         )
@@ -247,25 +310,6 @@
  '(web-mode-css-at-rule-face
    ((t (:foreground "#FF7F00"))))
  )
-
-;; http://dev.ariel-networks.com/wp/documents/aritcles/emacs/part16
-;; リスト9 範囲指定していないとき、C-wで前の単語を削除
-(defadvice kill-region (around kill-word-or-kill-region activate)
-  (if (and (interactive-p) transient-mark-mode (not mark-active))
-      (backward-kill-word 1)
-    ad-do-it))
-;; minibuffer用
-(define-key minibuffer-local-completion-map "\C-w" 'backward-kill-word)
-
-;; リスト10 カーソル位置の単語を削除
-(defun kill-word-at-point ()
-  (interactive)
-  (let ((char (char-to-string (char-after (point)))))
-    (cond
-     ((string= " " char) (delete-horizontal-space))
-     ((string-match "[\t\n -@\[-`{-~]" char) (kill-word 1))
-     (t (forward-char) (backward-word) (kill-word 1)))))
-(global-set-key "\M-d" 'kill-word-at-point)
 
 ;; http://qiita.com/ballforest/items/b3ea0af59dea465afcec
 (require 'iedit)
@@ -311,7 +355,7 @@
             (make-local-variable 'indent-tabs-mode)
             (setq tab-width 4)
             ;; (setq indent-tabs-mode t); インデントにタブを使う
-	    ))
+						))
 
 
 ;; emmet-mode
@@ -328,8 +372,8 @@
 ;; ac-emmet
 (setq web-mode-ac-sources-alist
       '(("php" . (ac-source-yasnippet ac-source-php-auto-yasnippets))
-	("html" . (ac-source-emmet-html-aliases ac-source-emmet-html-snippets))
-	("css" . (ac-source-css-property ac-source-emmet-css-snippets))))
+				("html" . (ac-source-emmet-html-aliases ac-source-emmet-html-snippets))
+				("css" . (ac-source-css-property ac-source-emmet-css-snippets))))
 (add-hook 'web-mode-before-auto-complete-hooks
           '(lambda ()
              (let ((web-mode-cur-language
@@ -345,14 +389,7 @@
 (require 'quickrun)
 
 ;; (require 'e2wm)
-;; (global-set-key (kbd "M-+") 'e2wm:start-management)
-
-;; go-lang
-(add-hook 'before-save-hook 'gofmt-before-save)
-(add-hook 'go-mode-hook
-	  '(lambda ()
-	     (setq tab-width 2)
-	     ))
+;; (global-set-key (kbd "\M-+") 'e2wm:start-management)
 
 ;; カーソル行に下線を表示
 (setq hl-line-face 'underline)
@@ -369,43 +406,43 @@
   "Set `ansi-color-for-comint-mode' to t." t)
 
 (add-hook 'shell-mode-hook
-	  '(lambda ()
-	     ;; zsh のヒストリファイル名を設定
-	     (setq comint-input-ring-file-name "~/.zsh_history")
-	     ;; ヒストリの最大数
-	     (setq comint-input-ring-size 1024)
-	     ;; 既存の zsh ヒストリファイルを読み込み
-	     (comint-read-input-ring t)
-	     ;; zsh like completion (history-beginning-search)
-	     (local-set-key "\M-p" 'comint-previous-matching-input-from-input)
-	     (local-set-key "\M-n" 'comint-next-matching-input-from-input)
-	     ;; 色の設定
-	     (setq ansi-color-names-vector
-		   ["#000000"           ; black
-		    "#ff6565"           ; red
-		    "#93d44f"           ; green
-		    "#eab93d"           ; yellow
-		    "#204a87"           ; blue
-		    "#ce5c00"           ; magenta
-		    "#89b6e2"           ; cyan
-		    "#ffffff"]          ; white
-		   )
-	     (ansi-color-for-comint-mode-on)
-	     )
-	  )
+					'(lambda ()
+						 ;; zsh のヒストリファイル名を設定
+						 (setq comint-input-ring-file-name "~/.zsh_history")
+						 ;; ヒストリの最大数
+						 (setq comint-input-ring-size 1024)
+						 ;; 既存の zsh ヒストリファイルを読み込み
+						 (comint-read-input-ring t)
+						 ;; zsh like completion (history-beginning-search)
+						 (local-set-key "\M-p" 'comint-previous-matching-input-from-input)
+						 (local-set-key "\M-n" 'comint-next-matching-input-from-input)
+						 ;; 色の設定
+						 (setq ansi-color-names-vector
+									 ["#000000"           ; black
+										"#ff6565"           ; red
+										"#93d44f"           ; green
+										"#eab93d"           ; yellow
+										"#204a87"           ; blue
+										"#ce5c00"           ; magenta
+										"#89b6e2"           ; cyan
+										"#ffffff"]          ; white
+									 )
+						 (ansi-color-for-comint-mode-on)
+						 )
+					)
 
-(require 'shell-pop)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(shell-pop-shell-type (quote ("ansi-term" "*shell-pop-ansi-term*" (lambda nil (ansi-term shell-pop-term-shell)))))
- '(shell-pop-term-shell "zsh")
- '(shell-pop-universal-key "C-]")
- '(shell-pop-window-size 50)
- '(shell-pop-full-span t)
- '(shell-pop-window-position "bottom"))
+;; (require 'shell-pop)
+;; (custom-set-variables
+;;  ;; custom-set-variables was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(shell-pop-shell-type (quote ("ansi-term" "*shell-pop-ansi-term*" (lambda nil (ansi-term shell-pop-term-shell)))))
+;;  '(shell-pop-term-shell "zsh")
+;;  '(shell-pop-universal-key "C-]")
+;;  '(shell-pop-window-size 50)
+;;  '(shell-pop-full-span t)
+;;  '(shell-pop-window-position "bottom"))
 
 ;; ace-jump
 (unless (package-installed-p 'ace-jump-mode)
@@ -430,5 +467,15 @@
 
 ;; emphasis trailing space
 (setq-default show-trailing-whitespace t)
+
+;; editorconfig
+(setq edconf-exec-path "/usr/local/bin/editorconfig")
+(when (locate-library "editorconfig") (editorconfig-mode 1))
+
+;; haml-mode
+(add-hook 'haml-mode-hook
+					(lambda ()
+						(setq indent-tabs-mode nil)
+						(define-key haml-mode-map "\C-m" 'newline-and-indent)))
 
 (provide 'init)

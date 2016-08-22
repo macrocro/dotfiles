@@ -96,19 +96,6 @@ set-aws-default-profile() {
     export AWS_DEFAULT_PROFILE=`egrep '\[.*\]' ~/.aws/credentials | peco | xargs -Iname expr name : '\[\(.*\)\]'`
 }
 
-## EC2-SSH
-ec2-secure-ssh() {
-    MYSECURITYGROUP=`aws ec2 describe-security-groups | jq '.SecurityGroups[] | select(.GroupName|startswith("ssh")) | .GroupId' -r`
-    echo "** security-group: $MYSECURITYGROUP **"
-    MYIP=`curl -s ipconfig.io`
-    echo "** authorize security group for $MYIP **"
-    aws ec2 authorize-security-group-ingress --group-id $MYSECURITYGROUP --protocol tcp --port 22 --cidr $MYIP/32
-    echo "** start ssh **"
-    ssh -i $1 ec2-user@$(ec2-list | grep running | peco | awk '{print $2}')
-    aws ec2 revoke-security-group-ingress --group-id $MYSECURITYGROUP --protocol tcp --port 22 --cidr $MYIP/32
-    echo "** revoke security group for $MYIP **"
-}
-
 ## EC2
 ec2-list() {
     aws ec2 describe-instances | jq -r '.Reservations[] | .Instances[] | [.InstanceId,.PublicIpAddress,.PrivateIpAddress,.State.Name,"# "+(.Tags[] | select(.Key == "Name") | .Value // "")] | join("\t")'
@@ -137,6 +124,8 @@ case ${OSTYPE} in
 
 	export GOPATH=$HOME
 	export GOBIN=$HOME/bin
+	# Golang bin Path
+	export PATH="$HOME/bin:$PATH"
 	export PATH="/usr/local/sbin:$PATH"
 
 	source /usr/local/share/zsh/site-functions/_aws
@@ -160,5 +149,38 @@ function backlog() {
     fi
 }
 
+function find-container() {
+		docker ps | grep $1 | awk '{print $1}'
+}
+
+function zip_pass() {
+    # usage : zip_pass encrypt_zip file/dir
+    openssl rand -base64 8 | xargs -Irs ksh -c "zip -r -P rs $1 $2 && echo Password: rs"
+}
+
+function killpeco() {
+		ps aux | peco | awk '{print $2}' | xargs kill -9
+}
+
+# rbenv
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
+
+# gitignore
+function gi() { curl -L -s https://www.gitignore.io/api/$@ ;}
+function notify() { terminal-notifier -message "$@" }
+
+source ~/.nvm/nvm.sh
+
+function recreate_and_import() {
+		target_database=`mysql -uroot -e "show databases\G;" | grep Database | awk '{print $2}' | peco`
+		mysql -uroot -e "drop database $target_database; create database $target_database;"
+		echo "Recreate database $target_database"
+
+		echo "Import SQL..."
+		mysql -uroot $target_database < $@
+		echo "Import finished!"
+}
+
+# Import private zsh settings
+source ~/.zshrc-private
