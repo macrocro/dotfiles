@@ -93,7 +93,11 @@ alias doco='de $(docker inspect --format="{{.Id}}" $(din|peco|awk "{print \$1}")
 
 # AWS
 set-aws-default-profile() {
-    export AWS_DEFAULT_PROFILE=`egrep '\[.*\]' ~/.aws/credentials | peco | xargs -Iname expr name : '\[\(.*\)\]'`
+    if [[ "$1" =~ "^[a-zA-Z0-9]+$" ]]; then
+        export AWS_DEFAULT_PROFILE=`egrep '\[.*\]' ~/.aws/credentials | grep $1 | xargs -Iname expr name : '\[\(.*\)\]'`
+    else
+        export AWS_DEFAULT_PROFILE=`egrep '\[.*\]' ~/.aws/credentials | peco | xargs -Iname expr name : '\[\(.*\)\]'`
+    fi
 }
 
 ## EC2
@@ -119,7 +123,7 @@ case ${OSTYPE} in
 	export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin"
 	# export MANPATH="/usr/local/man:$MANPATH"
 
-        # Setting for Mac OS
+  # Setting for Mac OS
 	export PATH=$(brew --prefix)/bin:$PATH
 
 	export GOPATH=$HOME
@@ -131,23 +135,12 @@ case ${OSTYPE} in
 	source /usr/local/share/zsh/site-functions/_aws
 
 	alias tmux-copy='tmux save-buffer - | reattach-to-user-namespace pbcopy'
-
-	$(boot2docker shellinit)
         ;;
     linux*)
 	export SHELL=/bin/zsh
         # Setting for Linux
         ;;
 esac
-
-# Not general-purpose
-function backlog() {
-    if [[ "$1" =~ "^[0-9]+$" ]]; then
-	open "https://richmedia.backlog.jp/view/HAIR-$1"
-    else
-	open "https://richmedia.backlog.jp/view/$1"
-    fi
-}
 
 function find-container() {
 		docker ps | grep $1 | awk '{print $1}'
@@ -180,6 +173,11 @@ function recreate_and_import() {
 		echo "Import SQL..."
 		mysql -uroot $target_database < $@
 		echo "Import finished!"
+}
+
+function dump_mysql_database() {
+		target_database=`mysql -uroot -e "show databases\G;" | grep Database | awk '{print $2}' | peco`
+		mysqldump -uroot $target_database
 }
 
 # Import private zsh settings

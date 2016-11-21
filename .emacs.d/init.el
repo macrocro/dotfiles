@@ -363,12 +363,14 @@
 (add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
 (add-hook 'css-mode-hook  'emmet-mode) ;; enable Emmet's css abbreviation.
 (add-hook 'php-mode-hook  'emmet-mode)
+(add-hook 'web-mode-hook  'emmet-mode)
 (add-hook 'emmet-mode-hook (lambda () (setq emmet-indentation 4))) ;; indent 4 spaces.
 (setq emmet-move-cursor-between-quotes t) ;; default nil
 (eval-after-load "emmet-mode"
   '(define-key emmet-mode-keymap (kbd "C-j") nil)) ;; C-j は newline-and-indent のままにしておく
 ;; (keyboard-translate ?\C-i ?\H-i) ;;C-i と Tabの被りを回避
 (define-key emmet-mode-keymap (kbd "C-x C-i") 'emmet-expand-line) ;; C-x C-i で展開
+
 ;; ac-emmet
 (setq web-mode-ac-sources-alist
       '(("php" . (ac-source-yasnippet ac-source-php-auto-yasnippets))
@@ -469,13 +471,33 @@
 (setq-default show-trailing-whitespace t)
 
 ;; editorconfig
+(require 'editorconfig)
 (setq edconf-exec-path "/usr/local/bin/editorconfig")
-(when (locate-library "editorconfig") (editorconfig-mode 1))
+(add-to-list 'load-path "~/.emacs.d/lisp")
+(editorconfig-mode 1)
+;; (when (locate-library "editorconfig") (editorconfig-mode 1))
 
 ;; haml-mode
 (add-hook 'haml-mode-hook
 					(lambda ()
 						(setq indent-tabs-mode nil)
 						(define-key haml-mode-map "\C-m" 'newline-and-indent)))
+
+;; find-grep-diredした後にisearchする方法
+;; http://tam5917.hatenablog.com/entry/2014/10/23/110345
+(defun find-grep-dired-do-search (dir regexp)
+	"First perform `find-grep-dired', and wait for it to finish.
+Then, using the same REGEXP as provided to `find-grep-dired',
+perform `dired-do-search' on all files in the *Find* buffer."
+	(interactive "DFind-grep (directory): \nsFind-grep (grep regexp): ")
+	(find-grep-dired dir regexp)
+	(while (get-buffer-process (get-buffer "*Find*"))
+		(sit-for 1))
+	(with-current-buffer "*Find*"
+		(dired-toggle-marks)
+		(dired-do-search regexp)))
+(define-key global-map (kbd "M-s M-d") 'find-grep-dired-do-search)
+
+(define-key zencoding-expand-line (kbd "C-c C-v") 'zencoding-expand-line)
 
 (provide 'init)
