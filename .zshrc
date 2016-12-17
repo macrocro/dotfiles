@@ -155,7 +155,7 @@ function killpeco() {
 		ps aux | peco | awk '{print $2}' | xargs kill -9
 }
 
-# rbenv
+## rbenv
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
