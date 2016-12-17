@@ -1,2 +1,5 @@
 [core]
 	excludesfile = /Users/youki/.gitignore_global
+[user]
+	name = Yuki Kuroda
+	email = me@macrocro.com
