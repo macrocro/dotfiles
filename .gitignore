@@ -10,6 +10,8 @@
 !/.tmux-powerlinerc
 !/.tmux-powerline
 !/.oh-my-zsh
+!/.gitignore_global
+!/.gitconfig
 
 .emacs.d/history
 .emacs.d/auto-save-list/*

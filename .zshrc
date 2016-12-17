@@ -61,6 +61,9 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
+# enhancd
+source ~/.enhancd/init.sh
+
 # You may need to manually set your language environment
 export LANG=en_US.UTF-8
 
@@ -163,7 +166,8 @@ eval "$(rbenv init -)"
 function gi() { curl -L -s https://www.gitignore.io/api/$@ ;}
 function notify() { terminal-notifier -message "$@" }
 
-source ~/.nvm/nvm.sh
+export NVM_DIR="$HOME/.nvm"
+. "/usr/local/opt/nvm/nvm.sh"
 
 function recreate_and_import() {
 		target_database=`mysql -uroot -e "show databases\G;" | grep Database | awk '{print $2}' | peco`

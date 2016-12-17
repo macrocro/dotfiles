@@ -13,3 +13,6 @@
 [submodule ".emacs.d/plugins/yasnippet-snippets"]
 	path = .emacs.d/plugins/yasnippet-snippets
 	url = https://github.com/AndreaCrotti/yasnippet-snippets.git
+[submodule ".enhancd"]
+	path = .enhancd
+	url = https://github.com/b4b4r07/enhancd
