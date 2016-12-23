@@ -489,18 +489,18 @@
 
 ;; find-grep-diredした後にisearchする方法
 ;; http://tam5917.hatenablog.com/entry/2014/10/23/110345
-(defun find-grep-dired-do-search (dir regexp)
-	"First perform `find-grep-dired', and wait for it to finish.
-Then, using the same REGEXP as provided to `find-grep-dired',
-perform `dired-do-search' on all files in the *Find* buffer."
-	(interactive "DFind-grep (directory): \nsFind-grep (grep regexp): ")
-	(find-grep-dired dir regexp)
-	(while (get-buffer-process (get-buffer "*Find*"))
-		(sit-for 1))
-	(with-current-buffer "*Find*"
-		(dired-toggle-marks)
-		(dired-do-search regexp)))
-(define-key global-map (kbd "M-s M-d") 'find-grep-dired-do-search)
+;; (defun find-grep-dired-do-search (dir regexp)
+;; ;; 	"First perform `find-grep-dired', and wait for it to finish.
+;; ;; Then, using the same REGEXP as provided to `find-grep-dired',
+;; ;; perform `dired-do-search' on all files in the *Find* buffer."
+;; 	(interactive "DFind-grep (directory): \nsFind-grep (grep regexp): ")
+;; 	(find-grep-dired dir regexp)
+;; 	(while (get-buffer-process (get-buffer "*Find*"))
+;; 		(sit-for 1))
+;; 	(with-current-buffer "*Find*"
+;; 		(dired-toggle-marks)
+;; 		(dired-do-search regexp)))
+;; (define-key global-map (kbd "M-s M-d") 'find-grep-dired-do-search)
 
 (define-key zencoding-expand-line (kbd "C-c C-v") 'zencoding-expand-line)
 
