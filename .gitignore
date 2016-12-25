@@ -12,6 +12,7 @@
 !/.oh-my-zsh
 !/.gitignore_global
 !/.gitconfig
+!/.gemrc
 
 .emacs.d/history
 .emacs.d/auto-save-list/*
