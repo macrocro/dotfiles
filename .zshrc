@@ -14,8 +14,16 @@ ZSH_THEME="gianu"
 alias e='emacsclient -nw'
 alias tigs="tig status"
 alias tiga="tig --all"
+alias -g B='`git branch -a | peco --prompt "GIT BRANCH>" | head -n 1 | sed -e "s/^\*\s*//g"`'
 
-# alias zshconfig="mate ~/.zshrc"
+# aliases git
+alias g='git'
+alias gs='git status'
+alias gp='git pull'
+alias gpu='git push'
+alias gr='git remote'
+
+# ALIAS zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # Uncomment the following line to use case-sensitive completion.
@@ -74,6 +82,10 @@ else
     export EDITOR="emacsclient"
 fi
 
+
+export GLOBAL_IP_URL="http://httpbin.org/ip"
+
+
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
@@ -115,9 +127,21 @@ ec2-stop() {
     ec2-list | grep running | peco | awk '{print $1}' | xargs aws ec2 stop-instances --instance-ids
 }
 
-ec2-ssh() {
-    ssh -i ~/.ssh/docker-registry-hair.pem ec2-user@$(ec2-list | grep running | peco | awk '{print $2}')
+open-security-group() {
+    MYIP=`curl -s $GLOBAL_IP_URL | jq -r .origin`
+
+    echo "** authorize security group for SG: $1, IP: $MYIP, Port: $2 **"
+    aws ec2 authorize-security-group-ingress --group-id $1 --protocol tcp --port $2 --cidr $MYIP/32
 }
+
+close-security-group() {
+    MYIP=`curl -s $GLOBAL_IP_URL | jq -r .origin`
+
+    aws ec2 revoke-security-group-ingress --group-id $1 --protocol tcp --port $2 --cidr $MYIP/32
+    echo "** revoke security group for SG: $1, IP: $MYIP, Port: $2 **"
+}
+
+
 
 case ${OSTYPE} in
     darwin*)
@@ -145,16 +169,16 @@ case ${OSTYPE} in
         ;;
 esac
 
-function find-container() {
+find-container() {
 		docker ps | grep $1 | awk '{print $1}'
 }
 
-function zip_pass() {
+zip_pass() {
     # usage : zip_pass encrypt_zip file/dir
     openssl rand -base64 8 | xargs -Irs ksh -c "zip -r -P rs $1 $2 && echo Password: rs"
 }
 
-function killpeco() {
+killpeco() {
 		ps aux | peco | awk '{print $2}' | xargs kill -9
 }
 
@@ -162,14 +186,20 @@ function killpeco() {
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
+## phpenv
+# export PATH="$HOME/.anyenv/bin:$PATH"
+# eval "$(anyenv init -)"
+
 # gitignore
-function gi() { curl -L -s https://www.gitignore.io/api/$@ ;}
-function notify() { terminal-notifier -message "$@" }
+gi() { curl -L -s https://www.gitignore.io/api/$@ ;}
+
+
+notify() { terminal-notifier -message "$@" }
 
 export NVM_DIR="$HOME/.nvm"
 . "/usr/local/opt/nvm/nvm.sh"
 
-function recreate_and_import() {
+recreate_and_import() {
 		target_database=`mysql -uroot -e "show databases\G;" | grep Database | awk '{print $2}' | peco`
 		mysql -uroot -e "drop database $target_database; create database $target_database;"
 		echo "Recreate database $target_database"
@@ -179,10 +209,50 @@ function recreate_and_import() {
 		echo "Import finished!"
 }
 
-function dump_mysql_database() {
+dump_mysql_database() {
 		target_database=`mysql -uroot -e "show databases\G;" | grep Database | awk '{print $2}' | peco`
 		mysqldump -uroot $target_database
 }
 
+add_br_git_status () {
+		git status -s | awk '{print $2}' | xargs -Ifilename sh -c 'echo "\n" >> filename'
+}
+
+find-code () {
+		grep -r $1 $2 | grep -v ".min." | grep -v "vendor/bundle"
+}
+
+ec () {
+		emacsclient -nw -e "(find-file \"$1\")";
+}
+
+open-find-code () {
+		grep -r $1 $2 | grep -v ".min." | peco | sed -e 's/\(.*\)\:.*/\1/g' | xargs -Ifilename sh -c "emacsclient -nw filename";
+}
+
+hub-pull-request () {
+		organization_name=${ORGANIZATION_NAME:-"wakeapp-inc"}
+		hub pull-request -b $organization_name/$REPOSITORY_NAME:$1 -h $organization_name/$REPOSITORY_NAME:$2
+}
+
+# http://interprism.hatenablog.com/entry/peco-zsh-history
+function peco-select-history() {
+    local tac
+    if which tac > /dev/null; then
+        tac="tac"
+    else
+        tac="tail -r"
+    fi
+    BUFFER=$(\history -n 1 | eval $tac | awk '!a[$0]++' | peco --query "$LBUFFER")
+    CURSOR=$#BUFFER
+    # zle clear-screen
+}
+zle -N peco-select-history
+bindkey '^r' peco-select-history
+
+# direnv : https://github.com/direnv/direnv
+eval "$(direnv hook zsh)"
+
 # Import private zsh settings
 source ~/.zshrc-private
+
