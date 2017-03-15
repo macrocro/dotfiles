@@ -33,30 +33,29 @@
 
 ;; ;; auto complete
 ;; ;; http://cx4a.org/software/auto-complete/manual.ja.html
-;; (require 'auto-complete-config)
+(require 'auto-complete-config)
 
 ;; (add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-20140519.650/dict/")
-;; (ac-config-default)
-
-;; (global-auto-complete-mode)
+(ac-config-default)
+(global-auto-complete-mode)
 
 ;; ;; ヘルプを表示
 ;; ;; デフォルトの情報源を指定
 ;; (setq-default ac-sources '(ac-source-files-in-current-dir ac-source-dictionary ac-source-words-in-all-buffer))
 
-;; ;;auto-completeが有効にならないモードで有効に
-;; (add-to-list 'ac-modes 'conf-mode)
-;; (add-to-list 'ac-modes 'conf-space-mode)
-;; (add-to-list 'ac-modes 'fundamental-mode)
-;; (add-to-list 'ac-modes 'processing-mode)
-;; (add-to-list 'ac-modes 'shell-script-mode)
-;; (add-to-list 'ac-modes 'text-mode)
+;;auto-completeが有効にならないモードで有効に
+(add-to-list 'ac-modes 'conf-mode)
+(add-to-list 'ac-modes 'conf-space-mode)
+(add-to-list 'ac-modes 'fundamental-mode)
+(add-to-list 'ac-modes 'processing-mode)
+(add-to-list 'ac-modes 'shell-script-mode)
+(add-to-list 'ac-modes 'text-mode)
 
-;; (ac-set-trigger-key "TAB")
-;; (define-key ac-completing-map(kbd "C-n") 'ac-next)
-;; (define-key ac-completing-map(kbd "C-p") 'ac-previous)
-;; (define-key ac-mode-map(kbd "C-'") 'auto-complete)
-;; (define-key ac-mode-map(kbd "M-'") 'ac-fuzzy-complete)
+(ac-set-trigger-key "TAB")
+(define-key ac-completing-map(kbd "C-n") 'ac-next)
+(define-key ac-completing-map(kbd "C-p") 'ac-previous)
+(define-key ac-mode-map(kbd "C-'") 'auto-complete)
+(define-key ac-mode-map(kbd "M-'") 'ac-fuzzy-complete)
 
 ;; golang
 (defun my-go-mode-hook ()
@@ -87,6 +86,24 @@
 
 ;; ruby
 (setq ruby-insert-encoding-magic-comment nil)
+(add-to-list 'auto-mode-alist '("\\.feature\\'" . fundamental-mode))
+
+;; robe
+;; require : gem install pry pry-doc method_source
+(autoload 'robe-mode "robe" "Code navigation, documentation lookup and completion for Ruby" t nil)
+(autoload 'robe-ac-setup "robe-ac" "robe auto-complete" nil nil)
+(add-hook 'robe-mode-hook 'robe-ac-setup)
+
+;; rspec mode
+;; https://github.com/pezra/rspec-mode
+(require 'rspec-mode)
+(eval-after-load 'rspec-mode
+  '(rspec-install-snippets))
+(setq rspec-use-rake-when-possible nil)
+(setq rspec-use-bundler-when-possible nil)
+(setq rspec-use-spring-when-possible nil)
+(setq rspec-spec-command "bin/rspec")
+(add-hook 'after-init-hook 'inf-ruby-switch-setup)
 
 ;; ;; 動かない
 ;; ;; リスト10 カーソル位置の単語を削除
@@ -99,12 +116,14 @@
 ;; ;;      (t (forward-char) (backward-word) (kill-word 1)))))
 ;; ;; (global-set-key "M-d" 'kill-word-at-point)
 
-;; http://dev.ariel-networks.com/wp/documents/aritcles/emacs/part16
-;; リスト9 範囲指定していないとき、C-wで前の単語を削除
-(defadvice kill-region (around kill-word-or-kill-region activate)
-  (if (and (called-interactive-p) transient-mark-mode (not mark-active))
-      (backward-kill-word 1)
-    ad-do-it))
+;; https://www.emacswiki.org/emacs/KillingAndYanking
+(defadvice kill-region (before unix-werase activate compile)
+	"When called interactively with no active region, delete a single word
+    backwards instead."
+	(interactive
+	 (if mark-active (list (region-beginning) (region-end))
+		 (list (save-excursion (backward-word 1) (point)) (point)))))
+
 ;; minibuffer用
 (define-key minibuffer-local-completion-map "\C-w" 'backward-kill-word)
 
@@ -479,10 +498,10 @@
 
 ;; editorconfig
 (require 'editorconfig)
-(setq edconf-exec-path "/usr/local/bin/editorconfig")
-(add-to-list 'load-path "~/.emacs.d/lisp")
+;; (setq edconf-exec-path "/usr/local/bin/editorconfig")
+;; (add-to-list 'load-path "~/.emacs.d/lisp")
 (editorconfig-mode 1)
-(when (locate-library "editorconfig") (editorconfig-mode 1))
+;; (when (locate-library "editorconfig") (editorconfig-mode 1))
 
 ;; haml-mode
 (add-hook 'haml-mode-hook
@@ -490,21 +509,35 @@
 						(setq indent-tabs-mode nil)
 						(define-key haml-mode-map "\C-m" 'newline-and-indent)))
 
-;; ;; find-grep-diredした後にisearchする方法
-;; ;; http://tam5917.hatenablog.com/entry/2014/10/23/110345
-;; ;; (defun find-grep-dired-do-search (dir regexp)
-;; ;; ;; 	"First perform `find-grep-dired', and wait for it to finish.
-;; ;; ;; Then, using the same REGEXP as provided to `find-grep-dired',
-;; ;; ;; perform `dired-do-search' on all files in the *Find* buffer."
-;; ;; 	(interactive "DFind-grep (directory): \nsFind-grep (grep regexp): ")
-;; ;; 	(find-grep-dired dir regexp)
-;; ;; 	(while (get-buffer-process (get-buffer "*Find*"))
-;; ;; 		(sit-for 1))
-;; ;; 	(with-current-buffer "*Find*"
-;; ;; 		(dired-toggle-marks)
-;; ;; 		(dired-do-search regexp)))
-;; ;; (define-key global-map (kbd "M-s M-d") 'find-grep-dired-do-search)
+;; find-grep-diredした後にisearchする方法
+;; http://tam5917.hatenablog.com/entry/2014/10/23/110345
+(defun find-grep-dired-do-search (dir regexp)
+	;; 	"First perform `find-grep-dired', and wait for it to finish.
+	;; Then, using the same REGEXP as provided to `find-grep-dired',
+	;; perform `dired-do-search' on all files in the *Find* buffer."
+	(interactive "DFind-grep (directory): \nsFind-grep (grep regexp): ")
+	(find-grep-dired dir regexp)
+	(while (get-buffer-process (get-buffer "*Find*"))
+		(sit-for 1))
+	(with-current-buffer "*Find*"
+		(dired-toggle-marks)
+		(dired-do-search regexp)))
+(define-key global-map (kbd "M-s M-d") 'find-grep-dired-do-search)
 
 ;; (define-key global-map (kbd "C-c C-v") 'zencoding-expand-line)
 
 (provide 'init)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+	 (quote
+		(nginx-mode rspec-mode auto-complete robe zencoding-mode yaml-mode web-mode smartrep smartparens shell-pop scss-mode rinari recentf-ext rainbow-mode rainbow-delimiters quickrun powerline phpunit php-auto-yasnippets php+-mode neotree multiple-cursors multi-term mmm-mode magit jsx-mode iedit helm-emmet haml-mode go-mode go-autocomplete git-rebase-mode git-commit-mode gh-md flymake-ruby flymake-php flymake-go flymake flycheck-tip flycheck-pos-tip editorconfig e2wm dockerfile-mode docker-tramp dired+ crosshairs color-theme-solarized autopair anzu ace-jump-mode ac-js2 ac-emmet))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
