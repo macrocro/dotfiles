@@ -92,9 +92,13 @@ export GLOBAL_IP_URL="http://httpbin.org/ip"
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 
+# Emacs
+
+alias restart-emacs="ps aux | grep emacs | grep daemon | awk '{print \$2}' | xargs kill && emacs --daemon"
+
 # Docker
 docker-id-names() {
-    docker ps -q | xargs docker inspect --format='{{.Name}}'
+		docker ps --format '{{.Names}}'
 }
 alias din='docker-id-names'
 
@@ -102,9 +106,10 @@ docker-exec() {
     docker exec -i -t $@ bash
 }
 alias de='docker-exec'
-
 alias doco='de $(docker inspect --format="{{.Id}}" $(din|peco|awk "{print \$1}"))'
-
+alias doca='docker attach $(docker inspect --format="{{.Id}}" $(din|peco|awk "{print \$1}"))'
+alias dcew='noti docker-compose exec web $1'
+alias dcer='noti docker-compose exec rails $1'
 
 # AWS
 set-aws-default-profile() {
@@ -117,7 +122,7 @@ set-aws-default-profile() {
 
 ## EC2
 ec2-list() {
-    aws ec2 describe-instances | jq -r '.Reservations[] | .Instances[] | [.InstanceId,.PublicIpAddress,.PrivateIpAddress,.State.Name,"# "+(.Tags[] | select(.Key == "Name") | .Value // "")] | join("\t")'
+		aws ec2 describe-instances | jq -r '.Reservations[] | .Instances[] | [.InstanceId,.PublicIpAddress,.PrivateIpAddress,"# "+.State.Name, (.Tags[]? | select(.Key == "Name")).Value] | join("\t")'
 }
 ec2-start() {
     ec2-list | grep stopped | peco | awk '{print $1}' | xargs aws ec2 start-instances --instance-ids
@@ -219,7 +224,7 @@ add_br_git_status () {
 }
 
 find-code () {
-		grep -r $1 $2 | grep -v ".min." | grep -v "vendor/bundle"
+		grep -r $1 $2 | grep -v ".min."
 }
 
 ec () {
@@ -256,3 +261,10 @@ eval "$(direnv hook zsh)"
 # Import private zsh settings
 source ~/.zshrc-private
 
+# https://github.com/emacs-jp/emacs-jp.github.com/issues/18#issuecomment-13697644
+# create emacs env file
+perl -wle \
+    'do { print qq/(setenv "$_" "$ENV{$_}")/ if exists $ENV{$_} } for @ARGV' \
+    PATH  VIRTUAL_ENV > ~/.emacs.d/shellenv.el
+
+export PATH="$HOME/.yarn/bin:$PATH"
