@@ -15,6 +15,7 @@ alias e='emacsclient -nw'
 alias tigs="tig status"
 alias tiga="tig --all"
 alias -g B='`git branch -a | peco --prompt "GIT BRANCH>" | head -n 1 | sed -e "s/^\*\s*//g"`'
+alias ll='ls -al'
 
 # aliases git
 alias g='git'
@@ -82,6 +83,8 @@ else
     export EDITOR="emacsclient"
 fi
 
+# FZF
+export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
 
 export GLOBAL_IP_URL="http://httpbin.org/ip"
 
@@ -109,7 +112,22 @@ alias de='docker-exec'
 alias doco='de $(docker inspect --format="{{.Id}}" $(din|peco|awk "{print \$1}"))'
 alias doca='docker attach $(docker inspect --format="{{.Id}}" $(din|peco|awk "{print \$1}"))'
 alias dcew='noti docker-compose exec web $1'
+alias dcrw='noti docker-compose run web $1'
 alias dcer='noti docker-compose exec rails $1'
+alias finde='e $(fzf)'
+
+update-docker-hosts(){
+	# clear existing *.docker.local entries from /etc/hosts
+	sudo sed -i '' '/\.docker\.local$/d' /etc/hosts
+
+	# iterate over each machine
+	docker-machine ls | tail -n +2 | awk '{print $1}' \
+	| while read -r MACHINE; do
+		MACHINE_IP="$(docker-machine ip ${MACHINE} 2>/dev/null)"
+		[[ -n $MACHINE_IP ]] && sudo /bin/bash -c "echo \"${MACHINE_IP}	${MACHINE}.docker.local\" >> /etc/hosts"
+		export no_proxy=$no_proxy,$MACHINE_IP
+	done
+}
 
 # AWS
 set-aws-default-profile() {
@@ -152,7 +170,8 @@ case ${OSTYPE} in
     darwin*)
 	export SHELL=/usr/local/bin/zsh
 
-	export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin"
+	export PATH="/usr/local/bin:/bin:/usr/sbin:/sbin:/usr/bin:/opt/X11/bin"
+	# export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin"
 	# export MANPATH="/usr/local/man:$MANPATH"
 
   # Setting for Mac OS
@@ -268,3 +287,15 @@ perl -wle \
     PATH  VIRTUAL_ENV > ~/.emacs.d/shellenv.el
 
 export PATH="$HOME/.yarn/bin:$PATH"
+export PATH="/usr/local/opt/openssl/bin:$PATH"
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+
+# tabtab source for serverless package
+# uninstall by removing these lines or running `tabtab uninstall serverless`
+[[ -f /Users/youki/.nvm/versions/node/v6.10.0/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh ]] && . /Users/youki/.nvm/versions/node/v6.10.0/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh
+# tabtab source for sls package
+# uninstall by removing these lines or running `tabtab uninstall sls`
+[[ -f /Users/youki/.nvm/versions/node/v6.10.0/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh ]] && . /Users/youki/.nvm/versions/node/v6.10.0/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+

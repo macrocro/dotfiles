@@ -23,6 +23,12 @@
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
 
+;; https://github.com/emacs-jp/emacs-jp.github.com/issues/18#issuecomment-13697644
+;; load environment value
+(load-file (expand-file-name "~/.emacs.d/shellenv.el"))
+(dolist (path (reverse (split-string (getenv "PATH") ":")))
+  (add-to-list 'exec-path path))
+
 ;; color-theme
 (require 'color-theme)
 (color-theme-initialize)
@@ -77,16 +83,27 @@
 (add-hook 'go-mode-hook 'my-go-mode-hook)
 
 ;; js2-mode
-(autoload 'js2-mode "js2-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-jsx-mode))
-(add-hook 'js2-mode-hook
-					'(lambda ()
-						 (setq js2-basic-offset 2)))
+;; (autoload 'js2-mode "js2-mode" nil t)
+;; (add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
+;; (add-to-list 'auto-mode-alist '("\\.js$" . js2-jsx-mode))
+;; (add-hook 'js2-mode-hook
+;; 					'(lambda ()
+;; 						 (setq js2-basic-offset 2)))
+
+;; rjsx-mode
+(add-to-list 'auto-mode-alist '(".*\\.js\\'" . rjsx-mode))
+
+;; terraform tcl-mode
+(autoload 'tcl-mode "tcl-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.tf\\'" . tcl-mode))
 
 ;; ruby
 (setq ruby-insert-encoding-magic-comment nil)
 (add-to-list 'auto-mode-alist '("\\.feature\\'" . fundamental-mode))
+
+;; http://gongo.hatenablog.com/entry/2016/02/10/092956
+(setenv "LC_ALL" "ja_JP.UTF-8")
+(setenv "LANG" "ja_JP.UTF-8")
 
 ;; robe
 ;; require : gem install pry pry-doc method_source
@@ -131,11 +148,11 @@
 ;; ;; (global-set-key (kbd "\M-[") 'switch-to-prev-buffer)
 ;; ;; (global-set-key (kbd "\M-]") 'switch-to-next-buffer)
 
-;; (require 'rainbow-mode)
-;; (add-hook 'css-mode-hook 'rainbow-mode)
-;; (add-hook 'scss-mode-hook 'rainbow-mode)
-;; (add-hook 'php-mode-hook 'rainbow-mode)
-;; (add-hook 'html-mode-hook 'rainbow-mode)
+(require 'rainbow-mode)
+(add-hook 'css-mode-hook 'rainbow-mode)
+(add-hook 'scss-mode-hook 'rainbow-mode)
+(add-hook 'php-mode-hook 'rainbow-mode)
+(add-hook 'html-mode-hook 'rainbow-mode)
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -211,6 +228,7 @@
   (define-key global-map (kbd "M-y")     'helm-show-kill-ring)
   (define-key global-map (kbd "C-c i")   'helm-imenu)
   (define-key global-map (kbd "C-x C-b")   'helm-buffers-list)
+  (define-key global-map (kbd "C-x C-p")   'helm-projectile)
 
   (define-key helm-map (kbd "C-h") 'delete-backward-char)
   (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
@@ -285,7 +303,7 @@
 
 ;; ;; JavaScript
 (add-to-list 'auto-mode-alist '("\\js.erb\\'" . js-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . js-mode))
+;; (add-to-list 'auto-mode-alist '("\\.jsx\\'" . js-mode))
 
 ;; web mode
 ;; http://web-mode.org/
@@ -295,7 +313,7 @@
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\html.erb\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
 
 ;; ;; web-modeの設定
 ;; (defun web-mode-hook ()
@@ -532,12 +550,61 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(flycheck-disabled-checkers (quote (javascript-jshint javascript-jscs)))
  '(package-selected-packages
 	 (quote
-		(nginx-mode rspec-mode auto-complete robe zencoding-mode yaml-mode web-mode smartrep smartparens shell-pop scss-mode rinari recentf-ext rainbow-mode rainbow-delimiters quickrun powerline phpunit php-auto-yasnippets php+-mode neotree multiple-cursors multi-term mmm-mode magit jsx-mode iedit helm-emmet haml-mode go-mode go-autocomplete git-rebase-mode git-commit-mode gh-md flymake-ruby flymake-php flymake-go flymake flycheck-tip flycheck-pos-tip editorconfig e2wm dockerfile-mode docker-tramp dired+ crosshairs color-theme-solarized autopair anzu ace-jump-mode ac-js2 ac-emmet))))
+		(pug-mode rjsx-mode move-text helm-projectile projectile projectile-git-autofetch projectile-rails 0blayout import-js string-utils string-inflection nginx-mode rspec-mode auto-complete robe zencoding-mode yaml-mode web-mode smartrep smartparens shell-pop scss-mode rinari recentf-ext rainbow-mode rainbow-delimiters quickrun powerline phpunit php-auto-yasnippets php+-mode neotree multiple-cursors multi-term mmm-mode magit jsx-mode iedit helm-emmet haml-mode go-mode go-autocomplete git-rebase-mode git-commit-mode gh-md flymake-ruby flymake-php flymake-go flymake flycheck-tip flycheck-pos-tip editorconfig e2wm dockerfile-mode docker-tramp dired+ crosshairs color-theme-solarized autopair anzu ace-jump-mode ac-js2 ac-emmet))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; Flycheck for Javascript ESLint
+;; (eval-after-load 'flycheck
+;;   '(custom-set-variables
+;;     '(flycheck-disabled-checkers '(javascript-jshint javascript-jscs))
+;;     ))
+;; (setq js2-include-browser-externs nil)
+;; (setq js2-mode-show-parse-errors nil)
+;; (setq js2-mode-show-strict-warnings nil)
+;; (setq js2-highlight-external-variables nil)
+;; (setq js2-include-jslint-globals nil)
+;; (add-hook 'web-mode-hook
+;;           (lambda ()
+;;             (when (equal web-mode-content-type "jsx")
+;;               (flycheck-add-mode 'javascript-eslint 'web-mode)
+;;               (flycheck-mode))))
+
+;; http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
+;; (defun my/use-eslint-from-node-modules ()
+;;   (let* ((root (locate-dominating-file
+;;                 (or (buffer-file-name) default-directory)
+;;                 "node_modules"))
+;;          (eslint (and root
+;;                       (expand-file-name "node_modules/eslint/bin/eslint.js"
+;;                                         root))))
+;;     (when (and eslint (file-executable-p eslint))
+;;       (setq-local flycheck-javascript-eslint-executable eslint))))
+
+;; (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+
+(require 'import-js)
+(add-hook 'rjsx-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-c i") 'import-js-import)
+            (local-set-key (kbd "C-c C-i i") 'import-js-fix)
+            (run-import-js)))
+
+(require 'cl-lib)
+(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+  "Prevent annoying \"Active processes exist\" query when you quit Emacs."
+  (cl-letf (((symbol-function #'process-list) (lambda ())))
+    ad-do-it))
+
+;; https://github.com/bbatsov/helm-projectile
+(require 'helm-projectile)
+(helm-projectile-on)
+
+(move-text-default-bindings)

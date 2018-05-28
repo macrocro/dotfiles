@@ -3,4 +3,9 @@
 	editor = /usr/bin/vim
 [user]
 	name = Yuki Kuroda
-	email = me@macrocro.com
+	email = kuroda@wakeapp.co.jp
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f

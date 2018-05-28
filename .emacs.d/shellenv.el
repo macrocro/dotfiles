@@ -1,0 +1,1 @@
+(setenv "PATH" "/Users/youki/.nvm/versions/node/v6.10.0/bin:/Users/youki/.rbenv/shims:/Users/youki/.rbenv/bin:/usr/local/sbin:/Users/youki/bin:/usr/local/bin:/usr/local/bin:/bin:/usr/sbin:/sbin:/usr/bin:/opt/X11/bin")

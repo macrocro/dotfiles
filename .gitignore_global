@@ -6,3 +6,5 @@ mybuild.sh
 orange_hiroba/data/11/scripts/cli
 .envrc
 .DS_Store
+.docker-sync/daemon.log
+~/Projects/golf-project/app/controllers/application_controller.rb
